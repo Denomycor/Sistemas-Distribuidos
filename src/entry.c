@@ -33,7 +33,7 @@ void entry_destroy(struct entry_t *entry){
 /* Função que duplica uma entry, reservando a memória necessária para a
  * nova estrutura.
  */
-struct entry_t *entry_dup(struct entry_t *entry){
+struct entry_t* entry_dup(struct entry_t *entry){
     struct entry_t *const temp = malloc(sizeof(struct entry_t));
     int len = strlen(entry->key)+1;
     temp->key = malloc(len);
@@ -45,7 +45,7 @@ struct entry_t *entry_dup(struct entry_t *entry){
 /* Função que substitui o conteúdo de uma entrada entry_t.
 *  Deve assegurar que destroi o conteúdo antigo da mesma.
 */
-void entry_replace(struct entry_t *entry, char *new_key, struct data_t *new_value){
+void entry_replace(struct entry_t* entry, char* new_key, struct data_t* new_value){
     free(entry->key);
     data_destroy(entry->value);
     entry->key = new_key;
