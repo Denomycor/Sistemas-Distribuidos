@@ -28,6 +28,7 @@ struct data_t *data_create2(int size, void *data){
  */
 void data_destroy(struct data_t *data){
     free(data->data);
+    free(data);
 }
 
 /* Função que duplica uma estrutura data_t, reservando a memória
