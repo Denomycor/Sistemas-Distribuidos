@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 /* Função que cria um novo elemento de dados data_t e reserva a memória
  * necessária, especificada pelo parâmetro size 
  */
