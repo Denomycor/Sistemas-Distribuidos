@@ -56,6 +56,6 @@ void entry_replace(struct entry_t* entry, char* new_key, struct data_t* new_valu
 *  Ordem das entradas é definida pela ordem das suas chaves.
 *  A função devolve 0 se forem iguais, -1 se entry1<entry2, e 1 caso contrário.
 */
-int entry_compare(struct entry_t *entry1, struct entry_t entry2){
+int entry_compare(struct entry_t* entry1, struct entry_t* entry2){
     //TODO: ????? Doesn't make sense
 }
