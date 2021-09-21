@@ -8,7 +8,15 @@
  * grupo no ficheiro list-private.h).
  * Em caso de erro, retorna NULL.
  */
-struct list_t *list_create();
+struct list_t *list_create(){
+    struct list_t* const temp = malloc(sizeof(struct list_t));
+    if(temp == NULL) {
+        return temp;
+    }
+    temp->head = malloc(sizeof(struct node_t));
+    temp->current = temp->head;
+    return temp;
+}
 
 /* Função que elimina uma lista, libertando *toda* a memoria utilizada
  * pela lista.

@@ -4,12 +4,13 @@
 #include "list.h"
 
 struct node_t {
-   
+   struct entry_t* value;
+   struct node_t* next;
 };
 
 struct list_t {
-    struct entry_t* value;
-    struct list_t* next;
+    struct node_t* head;
+    struct node_t* current;
 };
 
 void list_print(struct list_t* list);
