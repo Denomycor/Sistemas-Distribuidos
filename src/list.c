@@ -44,7 +44,10 @@ int list_remove(struct list_t *list, char *key);
  * ocupada pela entry ou lista, significando que é retornado NULL
  * quando é pretendido o acesso a uma entry inexistente.
 */
-struct entry_t *list_get(struct list_t *list, char *key);
+struct entry_t *list_get(struct list_t *list, char *key) {
+    struct node* next = list->current;
+    
+}
 
 /* Função que retorna o tamanho (número de elementos (entries)) da lista,
  * ou -1 (erro).
