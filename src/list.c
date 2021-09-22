@@ -46,17 +46,13 @@ int list_remove(struct list_t *list, char *key);
 */
 struct entry_t *list_get(struct list_t *list, char *key) {
     struct node* iter = list->head;
-    struct entry_t* result = malloc(sizeof(struct entry_t))
-    if(result == NULL) {
-        return result;
-    }
     while(iter != NULL) {
         if(strcmp(iter->entry->key, key)) {
-            return iter;
+            return iter->entry;
         }
         iter = iter->next;
     }
-    return iter;
+    return NULL;
 }
 
 /* Função que retorna o tamanho (número de elementos (entries)) da lista,
