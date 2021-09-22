@@ -36,7 +36,13 @@ int list_add(struct list_t *list, struct entry_t *entry);
 /* Função que elimina da lista a entry com a chave key.
  * Retorna 0 (OK) ou -1 (erro).
  */
-int list_remove(struct list_t *list, char *key);
+int list_remove(struct list_t *list, char *key) {
+    struct node_t* iter = list->head;
+    while(iter != NULL) {
+
+    }
+    return -1;
+}
 
 /* Função que obtém da lista a entry com a chave key.
  * Retorna a referência da entry na lista ou NULL em caso de erro.
@@ -45,7 +51,7 @@ int list_remove(struct list_t *list, char *key);
  * quando é pretendido o acesso a uma entry inexistente.
 */
 struct entry_t *list_get(struct list_t *list, char *key) {
-    struct node* iter = list->head;
+    struct node_t* iter = list->head;
     while(iter != NULL) {
         if(strcmp(iter->entry->key, key) == 0) {
             return iter->entry;
@@ -58,7 +64,15 @@ struct entry_t *list_get(struct list_t *list, char *key) {
 /* Função que retorna o tamanho (número de elementos (entries)) da lista,
  * ou -1 (erro).
  */
-int list_size(struct list_t *list);
+int list_size(struct list_t *list) {
+    int counter = 0;
+    struct node* iter = list->head;
+    while(iter != NULL) {
+        counter++;
+        iter = iter->next;
+    }
+    return counter;
+}
 
 /* Função que devolve um array de char* com a cópia de todas as keys da 
  * tabela, colocando o último elemento do array com o valor NULL e
