@@ -18,8 +18,8 @@ struct entry_t *entry_create(char *key, struct data_t *data){
  * valor NULL.
  */
 void entry_initialize(struct entry_t* entry){
-    entry->key = 0;
-    entry->value = 0;
+    entry->key = NULL;
+    entry->value = NULL;
 }
 
 /* Função que elimina uma entry, libertando a memória por ela ocupada
