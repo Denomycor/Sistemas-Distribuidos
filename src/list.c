@@ -14,7 +14,7 @@ struct list_t *list_create(){
         return temp;
     }
     temp->head = malloc(sizeof(struct node_t));
-    temp->current = temp->head;
+    temp->tail = temp->head;
     return temp;
 }
 
@@ -45,7 +45,7 @@ int list_remove(struct list_t *list, char *key);
  * quando é pretendido o acesso a uma entry inexistente.
 */
 struct entry_t *list_get(struct list_t *list, char *key) {
-    struct node* next = list->current;
+    struct node* next = list->tail;
     
 }
 
