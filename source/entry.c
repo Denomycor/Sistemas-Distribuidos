@@ -60,3 +60,5 @@ int entry_compare(struct entry_t* entry1, struct entry_t* entry2){
     int comp = strcmp(entry1->key, entry2->key);
     return comp <= 0 ? (comp < 0 ? -1 : 0) : 1;
 }
+
+//Revisto, nao ha copias desnecessarias, buffers sao movidos e apaga-se a si proprio, bug free

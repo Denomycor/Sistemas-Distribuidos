@@ -9,11 +9,7 @@
  * Em caso de erro, retorna NULL.
  */
 struct list_t *list_create(){
-    struct list_t* const temp = malloc(sizeof(struct list_t));
-    if(temp == NULL) {
-        return temp;
-    }
-    return temp;
+    return malloc(sizeof(struct list_t));
 }
 
 /* Função que elimina uma lista, libertando *toda* a memoria utilizada

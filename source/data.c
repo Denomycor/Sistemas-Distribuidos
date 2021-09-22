@@ -18,7 +18,7 @@ struct data_t *data_create(int size) {
 struct data_t *data_create2(int size, void *data) {
     struct data_t *const temp = malloc(sizeof(struct data_t));
     temp->datasize = size;
-    temp->data = data; // TODO: copia-se o buffer ou apodera-se dele
+    temp->data = data;
     return temp;
 }
 
@@ -49,3 +49,5 @@ void data_replace(struct data_t *data, int new_size, void *new_data) {
     data->datasize = new_size;
     data->data = new_data;
 }
+
+//Revisto, nao ha copias desnecessarias, buffers sao movidos e apaga-se a si proprio, bug free
