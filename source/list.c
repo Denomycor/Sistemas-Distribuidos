@@ -13,8 +13,6 @@ struct list_t *list_create(){
     if(temp == NULL) {
         return temp;
     }
-    temp->head = malloc(sizeof(struct node_t));
-    temp->tail = temp->head;
     return temp;
 }
 
@@ -39,7 +37,7 @@ int list_add(struct list_t *list, struct entry_t *entry);
 int list_remove(struct list_t *list, char *key) {
     struct node* iter = list->head;
     while(iter != NULL) {
-
+        //TODO
     }
     return -1;
 }
