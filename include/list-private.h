@@ -13,6 +13,7 @@ struct list_t {
     struct node_t* tail;
 };
 
+//TODO
 void list_print(struct list_t* list);
 
 #endif

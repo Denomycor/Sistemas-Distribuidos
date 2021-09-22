@@ -1,6 +1,5 @@
-#include "data.h"
-#include "entry.h"
-#include "list.h"
+#include "include\list.h"
+#include "include\list-private.h"
 #include <stdlib.h>
 
 
