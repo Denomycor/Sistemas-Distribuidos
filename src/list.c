@@ -37,7 +37,7 @@ int list_add(struct list_t *list, struct entry_t *entry);
  * Retorna 0 (OK) ou -1 (erro).
  */
 int list_remove(struct list_t *list, char *key) {
-    struct node_t* iter = list->head;
+    struct node* iter = list->head;
     while(iter != NULL) {
 
     }
@@ -66,7 +66,7 @@ struct entry_t *list_get(struct list_t *list, char *key) {
  */
 int list_size(struct list_t *list) {
     int counter = 0;
-    struct node* iter = list->head;
+    struct node_t* iter = list->head;
     while(iter != NULL) {
         counter++;
         iter = iter->next;
