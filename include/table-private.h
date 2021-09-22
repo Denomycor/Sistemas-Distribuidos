@@ -5,7 +5,6 @@
 
 struct table_t {
     struct list_t** list_refs;
-    char** keys;
 };
 
 int hash(const char* key ,int n){
