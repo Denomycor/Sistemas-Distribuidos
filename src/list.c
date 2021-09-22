@@ -47,7 +47,7 @@ int list_remove(struct list_t *list, char *key);
 struct entry_t *list_get(struct list_t *list, char *key) {
     struct node* iter = list->head;
     while(iter != NULL) {
-        if(strcmp(iter->entry->key, key)) {
+        if(strcmp(iter->entry->key, key) == 0) {
             return iter->entry;
         }
         iter = iter->next;
