@@ -41,10 +41,16 @@ void table_destroy(struct table_t* table){
  */
 int table_put(struct table_t *table, char *key, struct data_t *value){
     int index = get_hash_index(key, table->n);
-    struct entry_t* const temp = entry_create(strdup(key), data_dup(value));
-    list_add(table->lists_ptr[index], temp);
-    //TODO: Returning feedback to the client
-    //TODO: Replace if already exists
+    struct list_t* list = table->lists_ptr[index];
+    struct entry_t* entry = list_get(list, key);
+    if(entry==NULL){
+        struct entry_t* const temp = entry_create(strdup(key), data_dup(value));
+        list_add(list, temp);
+    }else{
+        data_destroy(entry->value);
+        entry->value = data_dup(value);
+    }
+    //TODO: Returning feedback to the client (q raio de erros podem acntecer)
 }
 
 /* Função para obter da tabela o valor associado à chave key.
@@ -56,17 +62,30 @@ int table_put(struct table_t *table, char *key, struct data_t *value){
  * a função.
  * Devolve NULL em caso de erro.
  */
-struct data_t *table_get(struct table_t *table, char *key);
+struct data_t *table_get(struct table_t *table, char *key){
+    struct entry_t* entry = list_get(table->lists_ptr[ get_hash_index(key, table->n) ], key);
+    return entry == NULL ? NULL : data_dup(entry->value);
+}
 
 /* Função para remover um elemento da tabela, indicado pela chave key, 
  * libertando toda a memória alocada na respetiva operação table_put.
  * Retorna 0 (ok) ou -1 (key not found).
  */
-int table_del(struct table_t *table, char *key);
+int table_del(struct table_t *table, char *key){
+    struct list_t* list = table->lists_ptr[get_hash_index(key, table->n)];
+    return list_remove(list, key); 
+    //TODO: Assume-se que list_remove da free a memoria antes de dar tirar da lista
+}
 
 /* Função que devolve o número de elementos contidos na tabela.
  */
-int table_size(struct table_t *table);
+int table_size(struct table_t *table){
+    int counter=0;
+    for(int i=0; i<table->n;i++){
+        counter += list_size(table->lists_ptr[i]); 
+    }
+    return counter;
+}
 
 /* Função que devolve um array de char* com a cópia de todas as keys da
  * tabela, colocando o último elemento do array com o valor NULL e
