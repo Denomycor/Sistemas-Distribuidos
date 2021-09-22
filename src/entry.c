@@ -58,13 +58,5 @@ void entry_replace(struct entry_t* entry, char* new_key, struct data_t* new_valu
 */
 int entry_compare(struct entry_t* entry1, struct entry_t* entry2){
     int comp = strcomp(entry1->key, entry2->key);
-    if(comp != 0) {
-        if(comp < 0) {
-            return -1;
-        } else {
-            return 1;
-        }
-    } else {
-        return comp;
-    }
+    return comp<=0?comp<0?-1:0:1;
 }
