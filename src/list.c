@@ -1,6 +1,7 @@
 #include "include\list.h"
 #include "include\list-private.h"
 #include <stdlib.h>
+#include <string.h>
 
 
 /* Função que cria uma nova lista (estrutura list_t a ser definida pelo
@@ -44,8 +45,15 @@ int list_remove(struct list_t *list, char *key);
  * quando é pretendido o acesso a uma entry inexistente.
 */
 struct entry_t *list_get(struct list_t *list, char *key) {
-    struct node* next = list->tail;
-    
+    struct node* next = list->head;
+    struct entry_t* result = malloc(sizeof(struct entry_t))
+    if(result == NULL) {
+        return result;
+    }
+    while(next != NULL) {
+        if(strco)
+    }
+    return next;
 }
 
 /* Função que retorna o tamanho (número de elementos (entries)) da lista,
