@@ -74,7 +74,6 @@ struct data_t *table_get(struct table_t *table, char *key){
 int table_del(struct table_t *table, char *key){
     struct list_t* list = table->lists_ptr[get_hash_index(key, table->n)];
     return list_remove(list, key); 
-    //TODO: Assume-se que list_remove da free a memoria antes de dar tirar da lista
 }
 
 /* Função que devolve o número de elementos contidos na tabela.
@@ -91,11 +90,29 @@ int table_size(struct table_t *table){
  * tabela, colocando o último elemento do array com o valor NULL e
  * reservando toda a memória necessária.
  */
-char **table_get_keys(struct table_t *table);
+char **table_get_keys(struct table_t *table){
+    char** buffer = malloc(sizeof(char*)*table_size(table)+1);
+    int index=0;
+    for(int i=0; i<table->n; i++){
+        struct node_t* node = table->lists_ptr[i]->head;
+        while (node!=NULL){
+            buffer[index] = strdup(node->entry->key);
+            node = node->next;
+            index++;
+        }
+    }
+    buffer[index+1] = NULL;
+    return buffer;
+}
 
 /* Função que liberta toda a memória alocada por table_get_keys().
  */
-void table_free_keys(char **keys);
+void table_free_keys(char **keys){
+    for(int i=0; keys[i]!=NULL; i++){
+        free(keys[i]);
+    }
+    free(keys);
+}
 
 /* Função que imprime o conteúdo da tabela.
  */
