@@ -6,6 +6,7 @@
 #include "include\entry.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 /* Função para criar/inicializar uma nova tabela hash, com n
  * linhas (n = módulo da função hash)
@@ -116,4 +117,9 @@ void table_free_keys(char **keys){
 
 /* Função que imprime o conteúdo da tabela.
  */
-void table_print(struct table_t *table);
+void table_print(struct table_t *table){
+    for(int i=0; i<table->n; i++){
+        list_print(table->lists_ptr[i]);
+        printf("%s", '\n');
+    }
+}
