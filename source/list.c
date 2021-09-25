@@ -15,7 +15,17 @@ struct list_t *list_create(){
 /* Função que elimina uma lista, libertando *toda* a memoria utilizada
  * pela lista.
  */
-void list_destroy(struct list_t *list);
+void list_destroy(struct list_t *list) {
+    struct node_t* temp;
+    struct node_t* iter = list->head;
+    while (iter != NULL) {
+        temp = iter->next;
+        entry_destroy(iter->entry);
+        free(iter);
+        iter = temp;
+    }
+    free(list);
+}
 
 /* Função que adiciona no final da lista (tail) a entry passada como
 * argumento caso não exista na lista uma entry com key igual àquela
@@ -25,15 +35,42 @@ void list_destroy(struct list_t *list);
 * Retorna 0 (OK) ou -1 (erro).
 */
 
-int list_add(struct list_t *list, struct entry_t *entry);
+int list_add(struct list_t *list, struct entry_t *entry) {
+    if(list == NULL || entry == NULL) {
+        return -1;
+    }else {
+        struct entry_t* exists = list_get(list, entry->key);
+        if(exists == NULL) {
+            struct node_t* const new = malloc(sizeof(struct node_t));
+            new->entry = entry_create(entry->key, entry->value); // maybe entry replace ?
+            if(list->head == NULL) {
+                list->head = new;
+            } else {
+                list->tail->next = new;
+            }
+            list->tail = new;
+            return 0;
+        }
+        entry_replace(exists, entry->key, entry->value);
+        return 0;
+    }
+}
 
 /* Função que elimina da lista a entry com a chave key.
  * Retorna 0 (OK) ou -1 (erro).
  */
 int list_remove(struct list_t *list, char *key) {
     struct node_t* iter = list->head;
+    struct node_t* prev;
     while(iter != NULL) {
-        //TODO
+        if(strcmp(key, iter->entry->key) == 0) {
+            prev->next = iter->next;
+            entry_destroy(iter->entry);
+            free(iter);
+            return 0;
+        }
+        prev = iter;
+        iter = iter->next;
     }
     return -1;
 }
@@ -59,6 +96,9 @@ struct entry_t *list_get(struct list_t *list, char *key) {
  * ou -1 (erro).
  */
 int list_size(struct list_t *list) {
+    if(list == NULL) {
+        return -1;
+    }
     int counter = 0;
     struct node_t* iter = list->head;
     while(iter != NULL) {
@@ -77,7 +117,12 @@ char **list_get_keys(struct list_t *list);
 /* Função que liberta a memória ocupada pelo array das keys da tabela,
  * obtido pela função list_get_keys.
  */
-void list_free_keys(char **keys);
+void list_free_keys(char **keys) {
+    for(int i=0; keys[i]!=NULL; i++){
+        free(keys[i]);
+    }
+    free(keys);
+}
 
 /* Função que imprime o conteúdo da lista para o terminal.
  */
