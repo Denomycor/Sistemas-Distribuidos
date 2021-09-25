@@ -16,10 +16,9 @@ struct list_t *list_create(){
  * pela lista.
  */
 void list_destroy(struct list_t *list) {
-    struct node_t* temp;
     struct node_t* iter = list->head;
     while (iter != NULL) {
-        temp = iter->next;
+        struct node_t* temp = iter->next;
         entry_destroy(iter->entry);
         free(iter);
         iter = temp;
@@ -39,7 +38,7 @@ int list_add(struct list_t *list, struct entry_t *entry) {
     if(list == NULL || entry == NULL) {
         return -1;
     }else {
-        struct entry_t* exists = list_get(list, entry->key);
+        struct node_t* exists = list_get_node(list, entry->key);
         if(exists == NULL) {
             struct node_t* const new = malloc(sizeof(struct node_t));
             new->entry = entry;
@@ -52,8 +51,8 @@ int list_add(struct list_t *list, struct entry_t *entry) {
             list->tail = new;
             return 0;
         }
-        entry_replace(exists, entry->key, entry->value);
-        free(entry); //Assusme-se que o arg entry está sempre na heap
+        entry_destroy(exists->entry);
+        exists->entry = entry;
         return 0;
     }
 }
@@ -86,14 +85,8 @@ int list_remove(struct list_t *list, char *key) {
  * quando é pretendido o acesso a uma entry inexistente.
 */
 struct entry_t *list_get(struct list_t *list, char *key) {
-    struct node_t* iter = list->head;
-    while(iter != NULL) {
-        if(strcmp(iter->entry->key, key) == 0) {
-            return iter->entry;
-        }
-        iter = iter->next;
-    }
-    return NULL;
+    struct node_t* temp = list_get_node(list, key);
+    return temp == NULL ? NULL : temp->entry;
 }
 
 /* Função que retorna o tamanho (número de elementos (entries)) da lista,

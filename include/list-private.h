@@ -13,4 +13,6 @@ struct list_t {
     struct node_t* tail;
 };
 
+struct node_t *list_get_node(struct list_t *list, char *key);
+
 #endif
