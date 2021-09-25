@@ -9,7 +9,11 @@
  * Em caso de erro, retorna NULL.
  */
 struct list_t *list_create(){
-    return malloc(sizeof(struct list_t));
+    struct list_t* const temp = malloc(sizeof(struct list_t));
+    if(temp != NULL){
+        temp->head = NULL;
+    }
+    return temp;
 }
 
 /* Função que elimina uma lista, libertando *toda* a memoria utilizada
@@ -49,10 +53,10 @@ int list_add(struct list_t *list, struct entry_t *entry) {
                 list->tail->next = new;
             }
             list->tail = new;
-            return 0;
+        }else{
+            entry_destroy(exists->entry);
+            exists->entry = entry;
         }
-        entry_destroy(exists->entry);
-        exists->entry = entry;
         return 0;
     }
 }
