@@ -42,7 +42,8 @@ int list_add(struct list_t *list, struct entry_t *entry) {
         struct entry_t* exists = list_get(list, entry->key);
         if(exists == NULL) {
             struct node_t* const new = malloc(sizeof(struct node_t));
-            new->entry = entry_create(entry->key, entry->value); // maybe entry replace ?
+            new->entry = entry;
+            new->next = NULL;
             if(list->head == NULL) {
                 list->head = new;
             } else {
@@ -52,9 +53,12 @@ int list_add(struct list_t *list, struct entry_t *entry) {
             return 0;
         }
         entry_replace(exists, entry->key, entry->value);
+        free(entry); //Assusme-se que o arg entry está sempre na heap
         return 0;
     }
 }
+
+
 
 /* Função que elimina da lista a entry com a chave key.
  * Retorna 0 (OK) ou -1 (erro).
@@ -112,7 +116,17 @@ int list_size(struct list_t *list) {
  * tabela, colocando o último elemento do array com o valor NULL e
  * reservando toda a memória necessária.
  */
-char **list_get_keys(struct list_t *list);
+char **list_get_keys(struct list_t *list){
+    int size = list_size(list);
+    char** buffer = malloc(sizeof(char*)*(size+1));
+    struct node_t* node = list->head;
+    for(int i=0; i<size; i++){
+        buffer[i] = strdup(node->entry->key);
+        node = node->next;
+    }
+    buffer[size] = NULL;
+    return buffer;
+}
 
 /* Função que liberta a memória ocupada pelo array das keys da tabela,
  * obtido pela função list_get_keys.
