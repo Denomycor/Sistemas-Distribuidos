@@ -1,4 +1,4 @@
-#include "include\table-private.h"
+#include "table-private.h"
 
 int get_hash_index(const char* key ,int n){
     int counter = 0;

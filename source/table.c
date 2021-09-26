@@ -1,9 +1,9 @@
-#include "include\table.h"
-#include "include\table-private.h"
-#include "include\list-private.h"
-#include "include\data.h"
-#include "include\list.h"
-#include "include\entry.h"
+#include "table.h"
+#include "table-private.h"
+#include "list-private.h"
+#include "data.h"
+#include "list.h"
+#include "entry.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -119,7 +119,7 @@ void table_free_keys(char **keys){
  */
 void table_print(struct table_t *table){
     for(int i=0; i<table->n; i++){
-        list_print(table->lists_ptr[i]);
-        printf("%s", '\n');
+        //list_print(table->lists_ptr[i]);
+        printf("%s", "\n");
     }
 }

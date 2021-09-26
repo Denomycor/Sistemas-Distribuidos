@@ -5,9 +5,9 @@
 #include <string.h>
 #include <assert.h>
 
-#include "include/data.h"
-#include "include/entry.h"
-#include "include/list.h"
+#include "data.h"
+#include "entry.h"
+#include "list.h"
 
 /**************************************************************/
 int testListaVazia() {

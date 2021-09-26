@@ -1,5 +1,5 @@
-#include "include/list.h"
-#include "include/list-private.h"
+#include "list.h"
+#include "list-private.h"
 #include <stdlib.h>
 #include <string.h>
 

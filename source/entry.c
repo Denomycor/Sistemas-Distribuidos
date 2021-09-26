@@ -1,5 +1,5 @@
-#include "include/entry.h"
-#include "include/data.h"
+#include "entry.h"
+#include "data.h"
 #include <stdlib.h>
 #include <string.h>
 
