@@ -68,10 +68,14 @@ int list_add(struct list_t *list, struct entry_t *entry) {
  */
 int list_remove(struct list_t *list, char *key) {
     struct node_t* iter = list->head;
-    struct node_t* prev;
+    struct node_t* prev = NULL;
     while(iter != NULL) {
         if(strcmp(key, iter->entry->key) == 0) {
-            prev->next = iter->next;
+            if (prev) {
+                prev->next = iter->next;    
+            } else {
+                list->head = iter->next;
+            }
             entry_destroy(iter->entry);
             free(iter);
             return 0;
