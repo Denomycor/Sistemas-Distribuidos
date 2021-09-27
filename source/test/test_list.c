@@ -126,7 +126,7 @@ printf("\n comp %d %s %s", strcmp(keys[2],e3->key), keys[2], e3->key);
 
 	list_free_keys(keys);
 
-	//list_destroy(list);
+	list_destroy(list);
 
 	printf("\n list - testGetKeys: %s\n",result?"passou":"não passou");
 	return result;
