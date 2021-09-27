@@ -1,3 +1,9 @@
+/* Grupo 16
+ * Afonso Esteves 54394
+ * Vicente Sousa 55386
+ * João Anjos 54476
+ */
+
 #include "list.h"
 #include "list-private.h"
 #include <stdlib.h>
@@ -142,4 +148,3 @@ void list_free_keys(char **keys) {
 /* Função que imprime o conteúdo da lista para o terminal.
  */
 void list_print(struct list_t *list);
-

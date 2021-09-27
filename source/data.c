@@ -1,3 +1,9 @@
+/* Grupo 16
+ * Afonso Esteves 54394
+ * Vicente Sousa 55386
+ * João Anjos 54476
+ */
+
 #include "data.h"
 #include <stdlib.h>
 #include <string.h>
@@ -65,5 +71,3 @@ void data_replace(struct data_t *data, int new_size, void *new_data) {
     data->datasize = new_size;
     data->data = new_data;
 }
-
-//Revisto, nao ha copias desnecessarias, buffers sao movidos e apaga-se a si proprio, bug free

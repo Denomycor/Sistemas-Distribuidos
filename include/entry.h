@@ -1,3 +1,9 @@
+/* Grupo 16
+ * Afonso Esteves 54394
+ * Vicente Sousa 55386
+ * João Anjos 54476
+ */
+
 #ifndef _ENTRY_H
 #define _ENTRY_H /* Módulo entry */
 

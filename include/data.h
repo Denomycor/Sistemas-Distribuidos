@@ -1,3 +1,9 @@
+/* Grupo 16
+ * Afonso Esteves 54394
+ * Vicente Sousa 55386
+ * João Anjos 54476
+ */
+
 #ifndef _DATA_H
 #define _DATA_H /* Módulo data */
 
