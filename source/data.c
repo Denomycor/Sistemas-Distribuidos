@@ -6,6 +6,10 @@
  * necessária, especificada pelo parâmetro size 
  */
 struct data_t *data_create(int size) {
+    if (size < 1) {
+        return NULL;
+    }
+    
     struct data_t *const temp = malloc(sizeof(struct data_t));
     temp->datasize = size;
     temp->data = malloc(size);
@@ -16,6 +20,10 @@ struct data_t *data_create(int size) {
  * o parâmetro data.
  */
 struct data_t *data_create2(int size, void *data) {
+    if (size < 1 || data == NULL) {
+        return NULL;
+    }
+
     struct data_t *const temp = malloc(sizeof(struct data_t));
     temp->datasize = size;
     temp->data = data;
@@ -26,7 +34,12 @@ struct data_t *data_create2(int size, void *data) {
  * libertando toda a memória por ele ocupada.
  */
 void data_destroy(struct data_t *data) {
-    free(data->data);
+    if (data == NULL) {
+        return;
+    }
+    if (data->data != NULL) {
+        free(data->data);
+    }
     free(data);
 }
 
@@ -34,10 +47,13 @@ void data_destroy(struct data_t *data) {
  * necessária para a nova estrutura.
  */
 struct data_t *data_dup(struct data_t *data) {
-    struct data_t *const temp = malloc(sizeof(struct data_t));
-    temp->datasize = data->datasize;
-    temp->data = malloc(temp->datasize);
-    memcpy(temp->data, data->data, temp->datasize);
+    if (data == NULL || data->data == NULL ) {
+        return NULL;
+    }
+    struct data_t *const temp = data_create(data->datasize);
+    if (temp != NULL) {
+        memcpy(temp->data, data->data, data->datasize);
+    }
     return temp;
 }
 

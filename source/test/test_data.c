@@ -76,7 +76,6 @@ int testCreate2() {
 /**************************************************************/
 
 int testDup() {
-	//char *data_s = "1234567890abc";
 	char *data_s = strdup("1234567890abc");
 	int result, data_size = strlen(data_s)+1;
 	struct data_t *data;
@@ -89,6 +88,7 @@ int testDup() {
 
 	if ((data = data_create(1)) == NULL)
 		pee("  O teste não pode prosseguir");
+
 
 	data->datasize = -1;
 

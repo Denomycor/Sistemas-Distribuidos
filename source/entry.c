@@ -25,6 +25,9 @@ void entry_initialize(struct entry_t* entry){
 /* Função que elimina uma entry, libertando a memória por ela ocupada
  */
 void entry_destroy(struct entry_t *entry){
+    if (entry == NULL) {
+        return;
+    }
     free(entry->key);
     data_destroy(entry->value);
     free(entry);
