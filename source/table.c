@@ -108,7 +108,7 @@ char **table_get_keys(struct table_t *table){
             index++;
         }
     }
-    buffer[index+1] = NULL;
+    buffer[index] = NULL;
     return buffer;
 }
 
