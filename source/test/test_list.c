@@ -217,8 +217,10 @@ int main() {
 
 	score += testGetKeys();
 
+
 	printf("teste list bin: %d/6\n",score);
 
+	testPrint();
     if (score == 6)
         return 0;
     else
