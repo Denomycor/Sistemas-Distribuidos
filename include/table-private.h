@@ -10,7 +10,7 @@
 #include "list.h"
 
 struct table_t {
-    struct list_t** lists_ptr; //Cant have an array of list_t because the function list_destroy would try to free the list address when its supposed to free the whole array
+    struct list_t** lists_ptr; 
     int n;
 };
 
