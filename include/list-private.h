@@ -9,14 +9,18 @@
 
 #include "list.h"
 
+/* Estrutura que define o nó de uma lista. 
+*/
 struct node_t {
-   struct entry_t* entry;
-   struct node_t* next;
+   struct entry_t* entry; /* Conteúdo guardado no nó de uma lista do tipo entry */
+   struct node_t* next; /* Pointer para o próximo elemento da lista */
 };
 
+/* Estrutura que define uma lista ligada.
+*/
 struct list_t {
-    struct node_t* head;
-    struct node_t* tail;
+    struct node_t* head; /* Cabeça da lista */
+    struct node_t* tail;/* Cauda da lista */
 };
 
 /*Função que obtém da lista o node que contém a entry com a chave key.
