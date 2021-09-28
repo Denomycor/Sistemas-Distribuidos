@@ -177,6 +177,27 @@ int testInsereMesmaKey() {
 }
 
 /**************************************************************/
+int testPrint() {
+	int result;
+	struct list_t *list = list_create();
+
+	struct entry_t *e1 = entry_create(strdup("abc"),data_create(5)),
+                    *e2 = entry_create(strdup("def"),data_create(5)),
+                    *e3 = entry_create(strdup("ghi"),data_create(5));
+	memcpy(e1->value->data,"abc1",5);
+	memcpy(e2->value->data,"def1",5);
+	memcpy(e3->value->data,"ghi1",5);
+
+	list_add(list,e1);
+	list_add(list,e2);
+	list_add(list,e3);
+
+    list_print(list);
+
+	list_destroy(list);
+
+	return result;
+}
 
 
 int main() {

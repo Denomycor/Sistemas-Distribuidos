@@ -36,7 +36,7 @@ int testPutInexistente() {
 
 		table_put(table,key[i],data[i]);
 	}
-
+    table_print(table);
 	assert(table_size(table) == 1024);
 	result = (table_size(table) == 1024);
 
