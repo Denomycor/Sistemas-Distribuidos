@@ -1,13 +1,23 @@
+# Grupo 16
+# Afonso Esteves 54394
+# Vicente Sousa 55386
+# João Anjos 54476
+
 INCLUDEDIR = include
 OBJDIR = object
 SRCDIR = source
 TESTDIR = test
 BINDIR = binary
-OBJECTFILES = data.o entry.o list-private.o list.o serialization.o table-private.o table.o
-TESTSOBJ = test_data.o test_entry.o test_list.o test_serialization.o test_table.o
-TESTS = test_data test_entry test_list test_serialization test_table
-FLAGS = 
 
+GETOBJECTFILES := $(shell find ./source -maxdepth 1 -name *.c)
+OBJECTFILES := $(GETOBJECTFILES:./source/%.c=%.o)
+
+GETTESTSOBJ := $(shell find ./source/test -name *.c)
+TESTSOBJ := $(GETTESTSOBJ:./source/test/%.c=%.o)
+TESTS := $(TESTSOBJ:%.o=%)
+
+FLAGS = 
+CC = gcc
 
 
 all: clean setup $(OBJECTFILES) $(TESTSOBJ) 
@@ -23,20 +33,24 @@ debug: clean setup $(OBJECTFILES) $(TESTSOBJ)
 .DEBUGT: .TESTS
 
 
-
+#obj files
 %.o: $(SRCDIR)/%.c
-	gcc $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
+	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
 
+#test obj files
 %.o: $(SRCDIR)/$(TESTDIR)/%.c
-	gcc $(FLAGS) -o $(addprefix $(OBJDIR)/$(TESTDIR)/,$@) -c $< -I $(INCLUDEDIR)
+	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/$(TESTDIR)/,$@) -c $< -I $(INCLUDEDIR)
 
-test_%: $(OBJDIR)/$(TESTDIR)/test_%.o $(OBJDIR)/%.o
-	gcc $(FLAGS) $(addprefix $(OBJDIR)/,$(OBJECTFILES))  $< -o $(addprefix $(BINDIR)/,$@.out)
+#exe files
+test_%: $(OBJDIR)/$(TESTDIR)/test_%.o $(addprefix $(OBJDIR)/,$(OBJECTFILES))
+	$(CC) $(FLAGS) $^ -o $(addprefix $(BINDIR)/,$@)
 
+#clean directory
 clean:
 	rm -rf $(OBJDIR)
 	rm -rf $(BINDIR)
 
+#setup directory
 setup:
 	mkdir -p $(OBJDIR)
 	mkdir -p $(BINDIR)
