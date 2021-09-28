@@ -9,11 +9,16 @@
 
 #include "list.h"
 
+/* Struct that represents a hash table, has an array of pointers to each list
+ * and the size of the array
+ */
 struct table_t {
-    struct list_t** lists_ptr; //Cant have an array of list_t because the function list_destroy would try to free the list address when its supposed to free the whole array
+    struct list_t** lists_ptr;
     int n;
 };
 
+/* Generates the hash code and applies the module operator to get the index 
+ */
 int get_hash_index(const char* key ,int n);
 
 #endif
