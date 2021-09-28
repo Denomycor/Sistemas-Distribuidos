@@ -147,4 +147,9 @@ void list_free_keys(char **keys) {
 
 /* Função que imprime o conteúdo da lista para o terminal.
  */
-void list_print(struct list_t *list);
+void list_print(struct list_t *list) {
+    struct node_t* iter = list->head;
+    while(iter != NULL) {
+        
+    }
+}
