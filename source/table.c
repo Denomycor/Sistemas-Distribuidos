@@ -47,6 +47,9 @@ void table_destroy(struct table_t* table){
  * Retorna 0 (ok) ou -1 em caso de erro.
  */
 int table_put(struct table_t *table, char *key, struct data_t *value){
+    if(table == NULL) {
+        return -1;
+    }
     int index = get_hash_index(key, table->n);
     struct list_t* list = table->lists_ptr[index];
     struct entry_t* entry = list_get(list, key);
@@ -57,7 +60,7 @@ int table_put(struct table_t *table, char *key, struct data_t *value){
         data_destroy(entry->value);
         entry->value = data_dup(value);
     }
-    //TODO: Returning feedback to the client (q raio de erros podem acntecer)
+    return 0;
 }
 
 /* Função para obter da tabela o valor associado à chave key.
@@ -125,7 +128,8 @@ void table_free_keys(char **keys){
  */
 void table_print(struct table_t *table){
     for(int i=0; i<table->n; i++){
-        //list_print(table->lists_ptr[i]);
-        printf("%s", "\n");
+        printf("Line %d\n", i);
+        list_print(table->lists_ptr[i]);
+        printf("\n");
     }
 }
