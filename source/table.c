@@ -128,7 +128,7 @@ void table_free_keys(char **keys){
  */
 void table_print(struct table_t *table){
     for(int i=0; i<table->n; i++){
-        printf("Line %d\n", i);
+        printf("Line %d\n", i+1);
         list_print(table->lists_ptr[i]);
         printf("\n");
     }

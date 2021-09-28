@@ -8,6 +8,7 @@
 #include "list-private.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 
 /* Função que cria uma nova lista (estrutura list_t a ser definida pelo
