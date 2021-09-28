@@ -19,6 +19,9 @@ struct list_t {
     struct node_t* tail;
 };
 
+/*Função que obtém da lista o node que contém a entry com a chave key.
+* Retorna a referência do node ou NULL em caso de erro.
+*/
 struct node_t *list_get_node(struct list_t *list, char *key);
 
 #endif

@@ -150,6 +150,7 @@ void list_free_keys(char **keys) {
 void list_print(struct list_t *list) {
     struct node_t* iter = list->head;
     while(iter != NULL) {
-        
+        printf("Key = %s, Value = %x\n", iter->entry->key, iter->entry->value);
+        iter = iter->next;
     }
 }
