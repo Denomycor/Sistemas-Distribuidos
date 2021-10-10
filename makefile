@@ -13,7 +13,7 @@ GETOBJECTFILES := $(shell find ./source -maxdepth 1 -name *.c)
 #name of all file objects
 OBJECTFILES := $(GETOBJECTFILES:./source/%.c=%.o)
 
-GETTESTSOBJ := $(shell find ./source -name *.c)
+GETTESTSOBJ := $(shell find ./source -name test_*.c)
 #name of all tests objects
 TESTSOBJ := $(GETTESTSOBJ:./source/%.c=%.o)
 #name of all tests exe
