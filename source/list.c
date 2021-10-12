@@ -9,10 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-<<<<<<< HEAD
-=======
-
->>>>>>> 97658d06351c7289122095337f6aecdfb6a6013f
 
 /* Função que cria uma nova lista (estrutura list_t a ser definida pelo
  * grupo no ficheiro list-private.h).
