@@ -9,13 +9,13 @@ SRCDIR = source
 TESTDIR = test
 BINDIR = binary
 
-GETOBJECTFILES := $(shell find ./source -maxdepth 1 -name *.c)
+GETOBJECTFILES := $(shell find ./source/ -type f \( -iname "*.c" ! -iname "test_*.c" \) )
 #name of all file objects
 OBJECTFILES := $(GETOBJECTFILES:./source/%.c=%.o)
 
-GETTESTSOBJ := $(shell find ./source/test -name *.c)
+GETTESTSOBJ := $(shell find ./source/ -type f -iname test_*.c)
 #name of all tests objects
-TESTSOBJ := $(GETTESTSOBJ:./source/test/%.c=%.o)
+TESTSOBJ := $(GETTESTSOBJ:./source/%.c=%.o)
 #name of all tests exe
 TESTS := $(TESTSOBJ:%.o=%)
 
@@ -41,7 +41,7 @@ debug: clean setup $(OBJECTFILES) $(TESTSOBJ)
 	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
 
 #test obj files
-%.o: $(SRCDIR)/$(TESTDIR)/%.c
+test_%.o: $(SRCDIR)/test_%.c
 	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/$(TESTDIR)/,$@) -c $< -I $(INCLUDEDIR)
 
 #exe files
