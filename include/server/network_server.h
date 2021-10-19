@@ -21,16 +21,16 @@ int network_main_loop(int listening_socket);
 /* Esta função deve:
  * - Ler os bytes da rede, a partir do client_socket indicado;
  * - De-serializar estes bytes e construir a mensagem com o pedido,
- *   reservando a memória necessária para a estrutura message_t.
+ *   reservando a memória necessária para a estrutura MessageT.
  */
-struct message_t *network_receive(int client_socket);
+MessageT *network_receive(int client_socket);
 
 /* Esta função deve:
  * - Serializar a mensagem de resposta contida em msg;
  * - Libertar a memória ocupada por esta mensagem;
  * - Enviar a mensagem serializada, através do client_socket.
  */
-int network_send(int client_socket, struct message_t *msg);
+int network_send(int client_socket, MessageT *msg);
 
 /* A função network_server_close() liberta os recursos alocados por
  * network_server_init().

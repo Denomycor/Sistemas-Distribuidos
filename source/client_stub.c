@@ -1,18 +1,24 @@
 
 #include "data.h"
 #include "entry.h"
+#include <string.h>
+#include "client_stub-private.h"
 
 /* Função para estabelecer uma associação entre o cliente e o servidor, 
  * em que address_port é uma string no formato <hostname>:<port>.
  * Retorna NULL em caso de erro.
  */
-struct rtable_t *rtable_connect(const char *address_port);
+struct rtable_t *rtable_connect(const char *address_port){
+    //iniciar ligação e retornar handler socket tcp
+}
 
 /* Termina a associação entre o cliente e o servidor, fechando a 
  * ligação com o servidor e libertando toda a memória local.
  * Retorna 0 se tudo correr bem e -1 em caso de erro.
  */
-int rtable_disconnect(struct rtable_t *rtable);
+int rtable_disconnect(struct rtable_t *rtable){
+    //terminar ligação e limpar handler socket tcp
+}
 
 /* Função para adicionar um elemento na tabela.
  * Se a key já existe, vai substituir essa entrada pelos novos dados.
