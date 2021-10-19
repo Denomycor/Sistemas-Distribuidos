@@ -50,3 +50,5 @@ void rtable_free_keys(char **keys);
  */
 void rtable_print(struct rtable_t *rtable);
 
+#endif
+

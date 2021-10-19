@@ -23,12 +23,11 @@ int network_connect(struct rtable_t *rtable);
  * - Esperar a resposta do servidor;
  * - Reservar a memória para a mensagem serializada recebida;
  * - De-serializar a mensagem de resposta, reservando a memória 
- *   necessária para a estrutura message_t que é devolvida;
+ *   necessária para a estrutura MessageT que é devolvida;
  * - Libertar a memória ocupada pela mensagem serializada recebida;
  * - Retornar a mensagem de-serializada ou NULL em caso de erro.
  */
-struct message_t *network_send_receive(struct rtable_t * rtable,
-                                       struct message_t *msg);
+MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg);
 
 /* A função network_close() fecha a ligação estabelecida por
  * network_connect().
