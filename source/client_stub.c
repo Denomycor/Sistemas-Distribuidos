@@ -1,10 +1,12 @@
 
 #include "data.h"
 #include "entry.h"
+#include "table.h"
 #include <string.h>
 #include "client_stub-private.h"
 #include "sdmessage.pb-c.h"
 #include "serialization.h"
+#include "priv-func.h"
 
 
 /* Função para estabelecer uma associação entre o cliente e o servidor, 
@@ -75,14 +77,13 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
     message_t__pack(&msg, buf);
 
     if((write(rtable->sockfd,buf,len)) != len){
-        //close(rtable->sockfd);
         return -1;
     }
 
     free(buf); 
     free(msg.data);
     len = MAX_BUF_SIZE; //whats the size of the response?
-    buf == malloc(len);
+    buf = malloc(len);
     
     //Waiting for server response
 
@@ -120,14 +121,13 @@ struct data_t *rtable_get(struct rtable_t *rtable, char *key){
     message_t__pack(&msg, buf);
 
     if((write(rtable->sockfd,buf,len)) != len){
-        //close(rtable->sockfd);
         return NULL;
     }
 
     free(buf); 
     //free(msg.data);
     len = MAX_BUF_SIZE; //whats the size of the response?
-    buf == malloc(len);
+    buf = malloc(len);
     
     //Waiting for server response
 
@@ -167,14 +167,13 @@ int rtable_del(struct rtable_t *rtable, char *key){
     message_t__pack(&msg, buf);
 
     if((write(rtable->sockfd,buf,len)) != len){
-        //close(rtable->sockfd);
         return -1;
     }
 
     free(buf); 
     //free(msg.data);
     len = MAX_BUF_SIZE; //whats the size of the response?
-    buf == malloc(len);
+    buf = malloc(len);
     
     //Waiting for server response
 
@@ -209,13 +208,12 @@ int rtable_size(struct rtable_t *rtable){
     message_t__pack(&msg, buf);
 
     if((write(rtable->sockfd,buf,len)) != len){
-        //close(rtable->sockfd);
         return -1;
     }
 
     free(buf); 
     len = MAX_BUF_SIZE; //whats the size of the response?
-    buf == malloc(len);
+    buf = malloc(len);
     
     //Waiting for server response
 
@@ -236,11 +234,56 @@ int rtable_size(struct rtable_t *rtable){
 /* Devolve um array de char* com a cópia de todas as keys da tabela,
  * colocando um último elemento a NULL.
  */
-char **rtable_get_keys(struct rtable_t *rtable);
+char **rtable_get_keys(struct rtable_t *rtable){
+    MessageT msg;
+    message_t__init(&msg);
+    msg.opcode = MESSAGE_T__OPCODE__OP_GETKEYS;
+    msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
+    msg.data_size = 0;
+    msg.data = NULL;
+    //send msg
+    int size = message_t__get_packed_size(&msg);
+    void* buff = malloc(size);
+    if(buff==NULL){
+        return -1;
+    }
+    message_t__pack(&msg,buff);
+    if((write(rtable->sockfd,buff,size)) != size){
+        return -1;
+    }
+    free(buff);
+    //waiting for response
+    size = MAX_BUF_SIZE;
+    buff = malloc(size);
+    size = read(rtable->sockfd,buff,size);\
+    //handling response
+    MessageT* resp = message_t__unpack(NULL, size, buff);
+    if(resp == NULL){
+        return -1;
+    }
+    char** result = malloc((resp->data_size+1)*sizeof(char*)); //data_size = nº keys
+    char* keys = malloc(strlen(resp->data)+1);
+    strcpy(resp->data,keys);
+    for(int i = 0; i < resp->data_size; i++){
+        int length = 1;
+        while(*(keys++)!='\0'){
+            length++;
+        }
+        result[i] = subsstr(keys,0,length);
+        keys = subsstr(keys,length,strlen(keys)+1);
+    }
+    result[resp->data_size+1] = NULL;
+    free(keys);
+    message_t__free_unpacked(resp, NULL);
+    return result;
+
+}
 
 /* Liberta a memória alocada por rtable_get_keys().
  */
-void rtable_free_keys(char **keys);
+void rtable_free_keys(char **keys){
+    table_free_keys(keys);
+}
 
 /* Função que imprime o conteúdo da tabela remota para o terminal.
  */
