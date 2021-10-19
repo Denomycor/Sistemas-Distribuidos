@@ -95,7 +95,7 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
 
     message_t__free_unpacked(resp, NULL);
     free(buf);
-    return 0;
+    return 0; 
 }
 
 /* Função para obter um elemento da tabela.
