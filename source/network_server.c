@@ -1,5 +1,3 @@
-#ifndef _NETWORK_SERVER_H
-#define _NETWORK_SERVER_H
 
 #include "table_skel.h"
 
@@ -37,4 +35,3 @@ int network_send(int client_socket, MessageT *msg);
  */
 int network_server_close();
 
-#endif
