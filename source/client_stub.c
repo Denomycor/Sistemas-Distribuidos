@@ -22,7 +22,7 @@ struct rtable_t *rtable_connect(const char *address_port){
             tcp_socket->ip = malloc(sizeof(char)*(i+1));
             memcpy(tcp_socket->ip, address_port, sizeof(char)*(i+1));
             ((char*)tcp_socket->ip)[i] = '\0';
-            has_dest = 1;
+            has_dest = 1; 
         }
     }
 
@@ -96,7 +96,7 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
 
     message_t__free_unpacked(resp, NULL);
     free(buf);
-    return 0;
+    return 0; 
 }
 
 /* Função para obter um elemento da tabela.
