@@ -97,8 +97,9 @@ int invoke(MessageT *msg){
         r=0;
         char* l = buf;
         while(k[r]!=NULL){
-            memcpy(l, k[r++], sizeof(char)*(strlen(l)+1)); ///copy for single buff
+            memcpy(l, k[r], sizeof(char)*(strlen(k[r])+1)); ///copy for single buff
             l += sizeof(char)*(strlen(l)+2); //advance ptr to the start of next string
+            r++;
         }
 
         msg->data = buf;
