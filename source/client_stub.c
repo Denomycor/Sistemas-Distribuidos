@@ -4,7 +4,7 @@
 #include <string.h>
 #include "client_stub-private.h"
 #include "sdmessage.pb-c.h"
-#include "serialization.h"
+#include "serialization.h" 
 
 
 /* Função para estabelecer uma associação entre o cliente e o servidor, 
