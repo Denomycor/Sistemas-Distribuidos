@@ -1,5 +1,3 @@
-#ifndef _NETWORK_CLIENT_H
-#define _NETWORK_CLIENT_H
 
 #include "client_stub.h"
 #include "sdmessage.pb-c.h"
@@ -33,5 +31,3 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg);
  * network_connect().
  */
 int network_close(struct rtable_t * rtable);
-
-#endif
