@@ -1,3 +1,5 @@
+#ifndef _CLIENT_STUB_H
+#define _CLIENT_STUB_H
 
 #include "data.h"
 #include "entry.h"
@@ -53,4 +55,6 @@ void rtable_free_keys(char **keys);
 /* Função que imprime o conteúdo da tabela remota para o terminal.
  */
 void rtable_print(struct rtable_t *rtable);
+
+#endif
 
