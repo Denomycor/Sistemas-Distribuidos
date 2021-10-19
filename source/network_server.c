@@ -34,4 +34,3 @@ int network_send(int client_socket, MessageT *msg);
  * network_server_init().
  */
 int network_server_close();
-

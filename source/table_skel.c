@@ -20,4 +20,3 @@ void table_skel_destroy();
 */
 int invoke(MessageT *msg);
 
-
