@@ -3,6 +3,10 @@
 #include "network_server.h"
 #include "table_skel.h"
 
-int main(){
+struct table_t* g_table;
+
+int main(int argc, char** argv){
+
+    
 
 }

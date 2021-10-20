@@ -5,7 +5,7 @@
 #include "serialization.h"
 #include "string.h"
 
-extern struct table_t g_table;
+extern struct table_t* g_table;
 
 /* Inicia o skeleton da tabela.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -14,13 +14,14 @@ extern struct table_t g_table;
  * Retorna 0 (OK) ou -1 (erro, por exemplo OUT OF MEMORY)
  */
 int table_skel_init(int n_lists){
-
-    
+    return (g_table = table_create(n_lists)) == NULL ? -1:0;  
 }
 
 /* Liberta toda a memória e recursos alocados pela função table_skel_init.
  */
-void table_skel_destroy();
+void table_skel_destroy(){
+    table_destroy(g_table);
+}
 
 /* Executa uma operação na tabela (indicada pelo opcode contido em msg)
  * e utiliza a mesma estrutura MessageT para devolver o resultado.
@@ -60,19 +61,19 @@ int invoke(MessageT *msg){
             msg->opcode++;
             msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
             free(msg->data);
-            msg->data = temp;
-            msg->data_size = sizeof(struct data_t);
+            msg->data_size = data_to_buffer(temp, &msg->data);
         }
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_PUT){
         struct entry_t* temp = buffer_to_entry(msg->data, msg->data_size);
         if(table_put(&g_table, temp->key, temp->value)==-1){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
+            entry_destroy(temp);
         }else{
             msg->opcode++;
+            free(temp);
         }
         msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
-        free(temp);
         free(msg->data);
         msg->data = NULL;
         msg->data_size = 0;
