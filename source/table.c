@@ -133,3 +133,9 @@ void table_print(struct table_t *table){
         printf("\n");
     }
 }
+
+char* table_to_string(struct table_t *table) {
+    for(int i=0;i<table->n; i++){
+        
+    }
+}

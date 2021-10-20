@@ -1,7 +1,6 @@
 
 #include "data.h"
 #include "entry.h"
-#include "table.h"
 #include <string.h>
 #include "client_stub-private.h"
 #include "sdmessage.pb-c.h"
@@ -67,33 +66,27 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
     msg.opcode = MESSAGE_T__OPCODE__OP_PUT;
     msg.c_type = MESSAGE_T__C_TYPE__CT_ENTRY;
     msg.data_size = entry_to_buffer(entry, &msg.data);
-
-    int len = message_t__get_packed_size(&msg);
-    void* buf = malloc(len);
-    
+    //Send message
+    int size = message_t__get_packed_size(&msg);
+    void* buf = malloc(size);
     if(buf == NULL){
         return -1;
     }
     message_t__pack(&msg, buf);
-
-    if((write(rtable->sockfd,buf,len)) != len){
+    if((write(rtable->sockfd,buf,size)) != size){
         return -1;
     }
-
     free(buf); 
     free(msg.data);
-    len = MAX_BUF_SIZE; //whats the size of the response?
-    buf = malloc(len);
-    
-    //Waiting for server response
-
-    len = read(rtable->sockfd, buf, len);
-    
-    MessageT* resp = message_t__unpack(NULL, len, buf);
+    //Waiting for response
+    size = MAX_BUF_SIZE; 
+    buf = malloc(size);
+    size = read(rtable->sockfd, buf, size);
+    //Handling response
+    MessageT* resp = message_t__unpack(NULL, size, buf);
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         return -1;
     }
-
     message_t__free_unpacked(resp, NULL);
     free(buf);
     return 0; 
@@ -110,36 +103,28 @@ struct data_t *rtable_get(struct rtable_t *rtable, char *key){
     msg.c_type = MESSAGE_T__C_TYPE__CT_KEY;
     msg.data_size = strlen(key)+1; //has to be null terminated
     msg.data = key;
-
-
-    int len = message_t__get_packed_size(&msg);
-    void* buf = malloc(len);
-    
+    //Send message
+    int size = message_t__get_packed_size(&msg);
+    void* buf = malloc(size);
     if(buf == NULL){
         return NULL;
     }
     message_t__pack(&msg, buf);
-
-    if((write(rtable->sockfd,buf,len)) != len){
+    if((write(rtable->sockfd,buf,size)) != size){
         return NULL;
     }
-
     free(buf); 
+    //Waiting for response
     //free(msg.data);
-    len = MAX_BUF_SIZE; //whats the size of the response?
-    buf = malloc(len);
-    
-    //Waiting for server response
-
-    len = read(rtable->sockfd,buf, len);
-    
-    MessageT* resp = message_t__unpack(NULL, len, buf);
+    size = MAX_BUF_SIZE; 
+    buf = malloc(size);
+    size = read(rtable->sockfd,buf, size);
+    //Handling response
+    MessageT* resp = message_t__unpack(NULL, size, buf);
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         return NULL;
     }
-
     struct data_t*const data = buffer_to_data(resp->data, resp->data_size);
-
     message_t__free_unpacked(resp, NULL);
     free(buf);
     return data;
@@ -157,33 +142,27 @@ int rtable_del(struct rtable_t *rtable, char *key){
     msg.c_type = MESSAGE_T__C_TYPE__CT_KEY;
     msg.data_size = strlen(key)+1; //has to be null terminated
     msg.data = key;
-
-    int len = message_t__get_packed_size(&msg);
-    void* buf = malloc(len);
-    
+    //Sends message
+    int size = message_t__get_packed_size(&msg);
+    void* buf = malloc(size);
     if(buf == NULL){
         return -1;
     }
     message_t__pack(&msg, buf);
-
-    if((write(rtable->sockfd,buf,len)) != len){
+    if((write(rtable->sockfd,buf,size)) != size){
         return -1;
     }
-
     free(buf); 
+    //Waiting for response
     //free(msg.data);
-    len = MAX_BUF_SIZE; //whats the size of the response?
-    buf = malloc(len);
-    
-    //Waiting for server response
-
-    len = read(rtable->sockfd, buf, len);
-    
-    MessageT* resp = message_t__unpack(NULL, len, buf);
+    size = MAX_BUF_SIZE; 
+    buf = malloc(size);
+    size = read(rtable->sockfd, buf, size);
+    //Handling response
+    MessageT* resp = message_t__unpack(NULL, size, buf);
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         return -1;
     }
-
     message_t__free_unpacked(resp, NULL);
     free(buf);
     return 0;
@@ -198,34 +177,27 @@ int rtable_size(struct rtable_t *rtable){
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
     msg.data_size = 0;
     msg.data = NULL;
-
-    int len = message_t__get_packed_size(&msg);
-    void* buf = malloc(len);
-    
+    //Send message
+    int size = message_t__get_packed_size(&msg);
+    void* buf = malloc(size);
     if(buf == NULL){
         return -1;
     }
     message_t__pack(&msg, buf);
-
-    if((write(rtable->sockfd,buf,len)) != len){
+    if((write(rtable->sockfd,buf,size)) != size){
         return -1;
     }
-
+    //Waiting for response
     free(buf); 
-    len = MAX_BUF_SIZE; //whats the size of the response?
-    buf = malloc(len);
-    
-    //Waiting for server response
-
-    len = read(rtable->sockfd, buf, len);
-    
-    MessageT* resp = message_t__unpack(NULL, len, buf);
+    size = MAX_BUF_SIZE; 
+    buf = malloc(size);
+    size = read(rtable->sockfd, buf, size);
+    //Handling response
+    MessageT* resp = message_t__unpack(NULL, size, buf);
     if(resp==NULL){
         return -1;
     }
-
     int result = *((int*)resp->data);
-
     message_t__free_unpacked(resp, NULL);
     free(buf);
     return result;
@@ -241,23 +213,23 @@ char **rtable_get_keys(struct rtable_t *rtable){
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
     msg.data_size = 0;
     msg.data = NULL;
-    //send msg
+    //Send msg
     int size = message_t__get_packed_size(&msg);
-    void* buff = malloc(size);
-    if(buff==NULL){
+    void* buf = malloc(size);
+    if(buf == NULL){
         return -1;
     }
-    message_t__pack(&msg,buff);
-    if((write(rtable->sockfd,buff,size)) != size){
+    message_t__pack(&msg,buf);
+    if((write(rtable->sockfd,buf,size)) != size){
         return -1;
     }
-    free(buff);
+    free(buf);
     //waiting for response
     size = MAX_BUF_SIZE;
-    buff = malloc(size);
-    size = read(rtable->sockfd,buff,size);\
+    buf = malloc(size);
+    size = read(rtable->sockfd,buf,size);\
     //handling response
-    MessageT* resp = message_t__unpack(NULL, size, buff);
+    MessageT* resp = message_t__unpack(NULL, size, buf);
     if(resp == NULL){
         return -1;
     }
@@ -282,11 +254,40 @@ char **rtable_get_keys(struct rtable_t *rtable){
 /* Liberta a memória alocada por rtable_get_keys().
  */
 void rtable_free_keys(char **keys){
-    table_free_keys(keys);
+    for(int i=0; keys[i]!=NULL; i++){
+        free(keys[i]);
+    }
+    free(keys);
 }
 
 /* Função que imprime o conteúdo da tabela remota para o terminal.
  */
-void rtable_print(struct rtable_t *rtable);
-
+void rtable_print(struct rtable_t *rtable) {
+    MessageT msg;
+    msg.opcode = MESSAGE_T__OPCODE__OP_PRINT;
+    msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
+    msg.data_size = 0;
+    msg.data = NULL;
+    //Send message
+    int size = message_t__get_packed_size(&msg);
+    void* buf = malloc(size);
+    if(buf == NULL) {
+        return -1;
+    }
+    message_t__pack(&msg, buf);
+    if(write(rtable->sockfd,buf,size) != size) {
+        return -1;
+    }
+    free(buf);
+    //Waiting for response
+    size = MAX_BUF_SIZE;
+    buf = malloc(size);
+    size = read(rtable->sockfd,buf,size);
+    //Handling response
+    MessageT* resp = message_t__unpack(NULL, size, buf);
+    if(resp == NULL){
+        return -1;
+    }
+    
+}
 
