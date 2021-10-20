@@ -5,6 +5,7 @@ int main(int argc, char *argv[]) {
 
     if (argc != 2) {
         printf("Deve chamar apenas com um argumento no seguinte formato -> [address]:[port]\n");
+        exit(0);
     }
 
     struct rtable_t *tab = rtable_connect(argv[1]);
