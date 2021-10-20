@@ -7,3 +7,4 @@ char* subsstr(const char* str, int st, int fn){
     memcpy(temp, str+st, size);
     temp[size]='\0';
     return temp;
+}
