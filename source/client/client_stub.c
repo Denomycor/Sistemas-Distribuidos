@@ -5,7 +5,6 @@
 #include <string.h>
 #include "client_stub-private.h"
 #include "sdmessage.pb-c.h"
-#include "serialization.h"
 #include "priv-func.h"
 #include "network_client.h"
 
