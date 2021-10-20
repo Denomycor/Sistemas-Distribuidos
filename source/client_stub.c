@@ -203,26 +203,11 @@ void rtable_print(struct rtable_t *rtable) {
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
     msg.data_size = 0;
     msg.data = NULL;
-    //Send message
-    int size = message_t__get_packed_size(&msg);
-    void* buf = malloc(size);
-    if(buf == NULL) {
-        return -1;
-    }
-    message_t__pack(&msg, buf);
-    if(write(rtable->sockfd,buf,size) != size) {
-        return -1;
-    }
-    free(buf);
-    //Waiting for response
-    size = MAX_BUF_SIZE;
-    buf = malloc(size);
-    size = read(rtable->sockfd,buf,size);
-    //Handling response
-    MessageT* resp = message_t__unpack(NULL, size, buf);
-    if(resp == NULL){
-        return -1;
-    }
     
+    MessageT* rsp = network_send_receive(rtable, &msg);
+
+    printf(rsp->data);
+
+    message_t__free_unpacked(rsp,NULL);
 }
 
