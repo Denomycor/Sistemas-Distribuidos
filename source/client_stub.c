@@ -6,7 +6,7 @@
 #include "sdmessage.pb-c.h"
 #include "serialization.h"
 #include "priv-func.h"
-
+#include "network_client.h"
 
 /* Função para estabelecer uma associação entre o cliente e o servidor, 
  * em que address_port é uma string no formato <hostname>:<port>.
@@ -24,6 +24,16 @@ struct rtable_t *rtable_connect(const char *address_port){
             has_dest = 1; 
         }
     }
+    /*
+    e isto aqui
+
+    tambem podiamos guardar logo as coisas no tcp_socket->socket e nao ter ip e address
+
+    if ( !has_dest || network_connect(tcpSocket) == -1 ) {
+        return NULL;
+    }
+
+    */
 
     tcp_socket->sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(tcp_socket->sockfd == -1 || !has_dest){
@@ -50,8 +60,9 @@ struct rtable_t *rtable_connect(const char *address_port){
  * Retorna 0 se tudo correr bem e -1 em caso de erro.
  */
 int rtable_disconnect(struct rtable_t *rtable){
-    int r = close(rtable->sockfd);
+    int r = network_close(rtable);
     free(rtable->ip);
+    free(rtable->socket);
     free(rtable);
     return r;
 }
@@ -66,30 +77,13 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
     msg.opcode = MESSAGE_T__OPCODE__OP_PUT;
     msg.c_type = MESSAGE_T__C_TYPE__CT_ENTRY;
     msg.data_size = entry_to_buffer(entry, &msg.data);
-    //Send message
-    int size = message_t__get_packed_size(&msg);
-    void* buf = malloc(size);
-    if(buf == NULL){
-        return -1;
-    }
-    message_t__pack(&msg, buf);
-    if((write(rtable->sockfd,buf,size)) != size){
-        return -1;
-    }
-    free(buf); 
-    free(msg.data);
-    //Waiting for response
-    size = MAX_BUF_SIZE; 
-    buf = malloc(size);
-    size = read(rtable->sockfd, buf, size);
-    //Handling response
-    MessageT* resp = message_t__unpack(NULL, size, buf);
-    if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
-        return -1;
-    }
-    message_t__free_unpacked(resp, NULL);
-    free(buf);
-    return 0; 
+
+    MessageT *rsp = network_send_receive(rtable, &msg);
+
+    //Process response
+
+    //Free response
+    message_t__free_unpacked(rsp, NULL);
 }
 
 /* Função para obter um elemento da tabela.
@@ -103,30 +97,15 @@ struct data_t *rtable_get(struct rtable_t *rtable, char *key){
     msg.c_type = MESSAGE_T__C_TYPE__CT_KEY;
     msg.data_size = strlen(key)+1; //has to be null terminated
     msg.data = key;
-    //Send message
-    int size = message_t__get_packed_size(&msg);
-    void* buf = malloc(size);
-    if(buf == NULL){
-        return NULL;
-    }
-    message_t__pack(&msg, buf);
-    if((write(rtable->sockfd,buf,size)) != size){
-        return NULL;
-    }
-    free(buf); 
-    //Waiting for response
-    //free(msg.data);
-    size = MAX_BUF_SIZE; 
-    buf = malloc(size);
-    size = read(rtable->sockfd,buf, size);
-    //Handling response
-    MessageT* resp = message_t__unpack(NULL, size, buf);
-    if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
-        return NULL;
-    }
-    struct data_t*const data = buffer_to_data(resp->data, resp->data_size);
-    message_t__free_unpacked(resp, NULL);
-    free(buf);
+
+    MessageT *rsp = network_send_receive(rtable, &msg);
+
+    //Process response
+    struct data_t*const data = buffer_to_data(rsp->data, rsp->data_size);
+    
+    //Free response
+    message_t__free_unpacked(rsp, NULL);
+
     return data;
 }
 
@@ -142,29 +121,12 @@ int rtable_del(struct rtable_t *rtable, char *key){
     msg.c_type = MESSAGE_T__C_TYPE__CT_KEY;
     msg.data_size = strlen(key)+1; //has to be null terminated
     msg.data = key;
-    //Sends message
-    int size = message_t__get_packed_size(&msg);
-    void* buf = malloc(size);
-    if(buf == NULL){
-        return -1;
-    }
-    message_t__pack(&msg, buf);
-    if((write(rtable->sockfd,buf,size)) != size){
-        return -1;
-    }
-    free(buf); 
-    //Waiting for response
-    //free(msg.data);
-    size = MAX_BUF_SIZE; 
-    buf = malloc(size);
-    size = read(rtable->sockfd, buf, size);
-    //Handling response
-    MessageT* resp = message_t__unpack(NULL, size, buf);
-    if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
-        return -1;
-    }
-    message_t__free_unpacked(resp, NULL);
-    free(buf);
+
+    MessageT *rsp = network_send_receive(rtable, &msg);
+    //Process response
+    
+    //Free response
+    message_t__free_unpacked(rsp, NULL);
     return 0;
 }
 
@@ -177,29 +139,15 @@ int rtable_size(struct rtable_t *rtable){
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
     msg.data_size = 0;
     msg.data = NULL;
-    //Send message
-    int size = message_t__get_packed_size(&msg);
-    void* buf = malloc(size);
-    if(buf == NULL){
-        return -1;
-    }
-    message_t__pack(&msg, buf);
-    if((write(rtable->sockfd,buf,size)) != size){
-        return -1;
-    }
-    //Waiting for response
-    free(buf); 
-    size = MAX_BUF_SIZE; 
-    buf = malloc(size);
-    size = read(rtable->sockfd, buf, size);
-    //Handling response
-    MessageT* resp = message_t__unpack(NULL, size, buf);
-    if(resp==NULL){
-        return -1;
-    }
-    int result = *((int*)resp->data);
-    message_t__free_unpacked(resp, NULL);
-    free(buf);
+
+    MessageT *rsp = network_send_receive(rtable, &msg);
+    
+    //Process response
+    int result = *((int*)rsp->data);
+    
+    //Free response
+    message_t__free_unpacked(rsp, NULL);
+
     return result;
 }
 
@@ -213,30 +161,15 @@ char **rtable_get_keys(struct rtable_t *rtable){
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
     msg.data_size = 0;
     msg.data = NULL;
-    //Send msg
-    int size = message_t__get_packed_size(&msg);
-    void* buf = malloc(size);
-    if(buf == NULL){
-        return -1;
-    }
-    message_t__pack(&msg,buf);
-    if((write(rtable->sockfd,buf,size)) != size){
-        return -1;
-    }
-    free(buf);
-    //waiting for response
-    size = MAX_BUF_SIZE;
-    buf = malloc(size);
-    size = read(rtable->sockfd,buf,size);\
-    //handling response
-    MessageT* resp = message_t__unpack(NULL, size, buf);
-    if(resp == NULL){
-        return -1;
-    }
-    char** result = malloc((resp->data_size+1)*sizeof(char*)); //data_size = nº keys
-    char* keys = malloc(strlen(resp->data)+1);
-    strcpy(resp->data,keys);
-    for(int i = 0; i < resp->data_size; i++){
+    
+    MessageT *rsp = network_send_receive(rtable, &msg);
+
+    char** result = malloc((rsp->data_size+1)*sizeof(char*)); //data_size = nº keys
+    char* keys = malloc(strlen(rsp->data)+1);
+
+    strcpy(keys, rsp->data);
+
+    for(int i = 0; i < rsp->data_size; i++){
         int length = 1;
         while(*(keys++)!='\0'){
             length++;
@@ -244,9 +177,11 @@ char **rtable_get_keys(struct rtable_t *rtable){
         result[i] = subsstr(keys,0,length);
         keys = subsstr(keys,length,strlen(keys)+1);
     }
-    result[resp->data_size+1] = NULL;
+    result[rsp->data_size+1] = NULL;
+
+    //Free response
     free(keys);
-    message_t__free_unpacked(resp, NULL);
+    message_t__free_unpacked(rsp, NULL);
     return result;
 
 }
