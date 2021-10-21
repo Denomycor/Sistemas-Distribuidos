@@ -154,3 +154,11 @@ void list_print(struct list_t *list) {
         iter = iter->next;
     }
 }
+
+char* list_to_string(struct list_t *list) {
+    struct node_t* iter = list->head;
+    char* result;
+    while(iter != NULL) {
+        iter = iter->next;
+    }
+}

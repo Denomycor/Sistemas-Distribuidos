@@ -32,6 +32,16 @@ struct rtable_t *rtable_connect(const char *address_port){
             ((char*)tcp_socket->ip)[i] = '\0';
         }
     }
+    /*
+    e isto aqui
+
+    tambem podiamos guardar logo as coisas no tcp_socket->socket e nao ter ip e address
+
+    if ( !has_dest || network_connect(tcpSocket) == -1 ) {
+        return NULL;
+    }
+
+    */
 
     tcp_socket->sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(tcp_socket->sockfd == -1 || tcp_socket->ip == NULL || tcp_socket->port == -1){
@@ -46,8 +56,9 @@ struct rtable_t *rtable_connect(const char *address_port){
  * Retorna 0 se tudo correr bem e -1 em caso de erro.
  */
 int rtable_disconnect(struct rtable_t *rtable){
-    int r = close(rtable->sockfd);
+    int r = network_close(rtable);
     free(rtable->ip);
+    free(rtable->socket);
     free(rtable);
     return r;
 }
@@ -174,6 +185,8 @@ char **rtable_get_keys(struct rtable_t *rtable){
         keys = subsstr(keys,length,strlen(keys)+1);
     }
     result[resp->data_size+1] = NULL;
+
+    //Free response
     free(keys);
     message_t__free_unpacked(resp, NULL);
     return result;
@@ -183,11 +196,25 @@ char **rtable_get_keys(struct rtable_t *rtable){
 /* Liberta a memória alocada por rtable_get_keys().
  */
 void rtable_free_keys(char **keys){
-    table_free_keys(keys);
+    for(int i=0; keys[i]!=NULL; i++){
+        free(keys[i]);
+    }
+    free(keys);
 }
 
 /* Função que imprime o conteúdo da tabela remota para o terminal.
  */
-void rtable_print(struct rtable_t *rtable);
+void rtable_print(struct rtable_t *rtable) {
+    MessageT msg;
+    msg.opcode = MESSAGE_T__OPCODE__OP_PRINT;
+    msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
+    msg.data_size = 0;
+    msg.data = NULL;
+    
+    MessageT* rsp = network_send_receive(rtable, &msg);
 
+    printf(rsp->data);
+
+    message_t__free_unpacked(rsp,NULL);
+}
 
