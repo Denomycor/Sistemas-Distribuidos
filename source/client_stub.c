@@ -58,7 +58,6 @@ struct rtable_t *rtable_connect(const char *address_port){
 int rtable_disconnect(struct rtable_t *rtable){
     int r = network_close(rtable);
     free(rtable->ip);
-    free(rtable->socket);
     free(rtable);
     return r;
 }
