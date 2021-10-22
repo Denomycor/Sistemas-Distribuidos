@@ -1,7 +1,6 @@
 
-#include "client_stub.h"
+#include "network_client.h"
 #include "sdmessage.pb-c.h"
-#include "client_stub-private.h"
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -56,7 +55,7 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     }
     message_t__pack(msg, buf);
 
-    if((write(rtable->sockfd,buf,len)) != len){
+    if((write(rtable->sockfd,buf,len)) == -1){
         return NULL;
     }
 

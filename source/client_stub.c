@@ -1,8 +1,7 @@
 
-#include "data.h"
-#include "entry.h"
 #include "table.h"
 #include "client_stub-private.h"
+#include "client_stub.h"
 #include "sdmessage.pb-c.h"
 #include "serialization.h"
 #include "priv-func.h"

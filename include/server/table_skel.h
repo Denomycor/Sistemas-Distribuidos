@@ -4,6 +4,8 @@
 #include "sdmessage.pb-c.h"
 #include "table.h"
 
+#define MAX_BUF_SIZE 2048
+
 /* Inicia o skeleton da tabela.
  * O main() do servidor deve chamar esta função antes de poder usar a
  * função invoke(). O parâmetro n_lists define o número de listas a
