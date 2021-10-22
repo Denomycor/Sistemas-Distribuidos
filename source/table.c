@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "priv-func.h"
 
 /* Função para criar/inicializar uma nova tabela hash, com n
  * linhas (n = módulo da função hash)
@@ -134,8 +135,12 @@ void table_print(struct table_t *table){
     }
 }
 
-char* table_to_string(struct table_t *table) {
-    for(int i=0;i<table->n; i++){
-        
+char* table_to_string(const struct table_t *table) {    
+    char* str = list_to_string(table->lists_ptr[0]);
+    for(int i=1;i<table->n; i++){
+        char* temp = list_to_string(table->lists_ptr[i]);
+        strapp(&str, temp);
+        free(temp);
     }
+    return str;
 }

@@ -3,4 +3,6 @@
 
 char* subsstr(const char* str, int st, int fn);
 
+void strapp(char** str, const char* app);
+
 #endif

@@ -108,7 +108,10 @@ int invoke(MessageT *msg){
         table_free_keys(k);
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_PRINT){
-
+        msg->opcode++;
+        msg->c_type = MESSAGE_T__C_TYPE__CT_TABLE;
+        msg->data = table_to_string(g_table);
+        msg->data_size = strlen(msg->data)+1;
 
 
     }else{

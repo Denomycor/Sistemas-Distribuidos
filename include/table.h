@@ -67,4 +67,7 @@ void table_free_keys(char **keys);
 void table_print(struct table_t *table);
 
 
+char* table_to_string(const struct table_t *table);
+
+
 #endif

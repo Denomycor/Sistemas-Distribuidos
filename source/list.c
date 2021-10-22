@@ -155,10 +155,37 @@ void list_print(struct list_t *list) {
     }
 }
 
-char* list_to_string(struct list_t *list) {
+char* list_to_string(const struct list_t *list) {
     struct node_t* iter = list->head;
-    char* result;
+    size_t n_chars = 0;
     while(iter != NULL) {
+        n_chars += strlen(iter->entry->key) + 2 + iter->entry->value->datasize + 1;
         iter = iter->next;
     }
+
+    char* buf = malloc(n_chars*sizeof(char));
+    iter = list->head;
+    char* ptr = buf;
+
+    while(iter != NULL) {
+        n_chars = strlen(iter->entry->key);
+        memcpy(ptr, iter->entry->key, n_chars*sizeof(char));
+        ptr+=n_chars;
+
+        *ptr = ':';
+        ptr++;
+        *ptr = ':';
+        ptr++;
+
+        memcpy(ptr, iter->entry->value->data, iter->entry->value->datasize);
+        ptr+=iter->entry->value->datasize;
+
+        *ptr = ' ';
+        ptr++;
+
+        iter = iter->next;
+    }
+
+    *(ptr-1) = '\0';
+    return buf;
 }
