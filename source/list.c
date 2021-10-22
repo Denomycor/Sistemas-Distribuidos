@@ -163,7 +163,7 @@ char* list_to_string(const struct list_t *list) {
         iter = iter->next;
     }
 
-    char* buf = malloc(n_chars*sizeof(char));
+    char* buf = malloc((n_chars+1)*sizeof(char));
     iter = list->head;
     char* ptr = buf;
 
@@ -186,6 +186,7 @@ char* list_to_string(const struct list_t *list) {
         iter = iter->next;
     }
 
-    *(ptr-1) = '\0';
+    *(ptr-1) = '\n';
+    *ptr = '\0';
     return buf;
 }
