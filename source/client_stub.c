@@ -31,16 +31,6 @@ struct rtable_t *rtable_connect(const char *address_port){
             ((char*)tcp_socket->ip)[i] = '\0';
         }
     }
-    /*
-    e isto aqui
-
-    tambem podiamos guardar logo as coisas no tcp_socket->socket e nao ter ip e address
-
-    if ( !has_dest || network_connect(tcpSocket) == -1 ) {
-        return NULL;
-    }
-
-    */
 
     tcp_socket->sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(tcp_socket->sockfd == -1 || tcp_socket->ip == NULL || tcp_socket->port == -1){

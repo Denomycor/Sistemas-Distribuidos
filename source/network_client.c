@@ -78,5 +78,5 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
  * network_connect().
  */
 int network_close(struct rtable_t * rtable){
-    return rtable_disconnect(rtable);
+    return close(rtable->sockfd);
 }
