@@ -29,8 +29,8 @@ int main(int argc, char** argv){
         return -1;
     }
 
-    char com[RESP_SIZE];
-    struct {
+        struct {
+            char com[RESP_SIZE];
             char* ops[3];
             int c;
         }parser; //initialized to 0
@@ -39,10 +39,10 @@ int main(int argc, char** argv){
         
 
         printf("\n 0 - size\n 1 - del<key>\n 2 - get<key>\n 3 - put<key><data>\n 4 - getkeys\n 5 - table_print\n 6 - quit\n Please choose from 0 to 6 what you wish to do");
-        scanf("%s", com);
+        scanf("%s", parser.com);
         
 
-        char* reader = com, last = com;
+        char* reader = parser.com, last = parser.com;
         while(*reader!='\0'){
             if(*reader == ' '){
                 *reader = '\0';
