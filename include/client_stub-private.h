@@ -12,7 +12,7 @@
 /* Remote table, que deve conter as informações necessárias para estabelecer a comunicação com o servidor. A definir pelo grupo em client_stub-private.h
  */
 struct rtable_t{
-    const char* ip;
+    char* ip;
     short port;
     int sockfd;
     struct sockaddr_in socket;

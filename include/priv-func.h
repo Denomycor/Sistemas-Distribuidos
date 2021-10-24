@@ -14,6 +14,6 @@ char* subsstr(const char* str, int st, int fn);
 void strapp(char** str, const char* app);
 
 //returns a pointer to a copy of a string
-char* sstrcpy(const char* str)
+char* sstrcpy(const char* str);
 
 #endif

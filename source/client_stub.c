@@ -199,7 +199,7 @@ void rtable_print(struct rtable_t *rtable) {
     
     MessageT* rsp = network_send_receive(rtable, &msg);
 
-    printf(rsp->data);
+    printf("%s", rsp->data);
 
     message_t__free_unpacked(rsp,NULL);
 }

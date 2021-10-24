@@ -19,7 +19,7 @@ int main(int argc, char** argv){
 
     struct rtable_t* table;
 
-    if(table = rtable_connect(argv[1]) == NULL){
+    if((table = rtable_connect(argv[1])) == NULL){
         perror("Error - couldn't open socket");
         return -1;
     }
@@ -42,7 +42,7 @@ int main(int argc, char** argv){
         scanf("%s", parser.com);
         
 
-        char* reader = parser.com, last = parser.com;
+        char *reader = parser.com, *last = parser.com;
         while(*reader!='\0'){
             if(*reader == ' '){
                 *reader = '\0';
@@ -69,7 +69,7 @@ int main(int argc, char** argv){
             if(data==NULL){
                 printf("The entry wasn't found\n");
             }else{
-                printf("The value is %.*s\n", data->datasize, data->data);
+                printf("The value is %.*x\n", data->datasize, data->data);
             }
             data_destroy(data);
 

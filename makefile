@@ -6,33 +6,35 @@
 INCLUDEDIR = include
 OBJDIR = object
 SRCDIR = source
-TESTDIR = test
 BINDIR = binary
 
-GETOBJECTFILES := $(shell find ./source/ -type f \( -iname "*.c" ! -iname "test_*.c" \) )
-#name of all file objects
-OBJECTFILES := $(GETOBJECTFILES:./source/%.c=%.o)
 
-GETTESTSOBJ := $(shell find ./source/ -type f -iname test_*.c)
-#name of all tests objects
-TESTSOBJ := $(GETTESTSOBJ:./source/%.c=%.o)
-#name of all tests exe
-TESTS := $(TESTSOBJ:%.o=%)
+SRCFILES := $(shell find ./source/ -type f \( -iname "*.c" ! -iname "test_*.c" \) )
+OBJFILES := $(SRCFILES:./source/%.c=%.o)
+
+#Objs related to table
+TABLEOBJ = data.o entry.o list-private.o list.o serialization.o table.o table-private.o
+
+#Objs needed to compile table_client
+CLIENTOBJS = client_stub.o network_client.o priv-func.o sdmessage.pb-c.o table_client.o
+
+#Objs needed to compile table_server
+SERVEROBJS = table_skel.o network_server.o priv-func.o sdmessage.pb-c.o table_server.o
 
 FLAGS = 
 CC = gcc
 
 
-all: clean setup $(OBJECTFILES) $(TESTSOBJ) 
-	make .TESTS
+all: clean setup $(OBJFILES) $(TESTSOBJ) 
+#	make .TESTS
 	
-.TESTS: $(TESTS)
+#.TESTS: $(TESTS)
 
 debug: FLAGS +=-g
-debug: clean setup $(OBJECTFILES) $(TESTSOBJ)
+debug: clean setup $(OBJFILES) $(TESTSOBJ)
 	make .DEBUGT
 
-.DEBUGT: FLAGS +=-g
+.DEBUGT: FLAGS +=-g -Wall
 .DEBUGT: .TESTS
 
 
@@ -40,13 +42,13 @@ debug: clean setup $(OBJECTFILES) $(TESTSOBJ)
 %.o: $(SRCDIR)/%.c
 	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
 
-#test obj files
-test_%.o: $(SRCDIR)/test_%.c
-	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/$(TESTDIR)/,$@) -c $< -I $(INCLUDEDIR)
+#table_client.exe
+table_client: $(TABLEOBJ) $(CLIENTOBJS)
+	$(CC) $(FLAGS) $(addprefix $(OBJDIR)/,$^) -o $(addprefix $(BINDIR)/,$@)
 
-#exe files
-test_%: $(OBJDIR)/$(TESTDIR)/test_%.o $(addprefix $(OBJDIR)/,$(OBJECTFILES))
-	$(CC) $(FLAGS) $^ -o $(addprefix $(BINDIR)/,$@)
+#table_server.exe
+table_server: $(TABLEOBJ) $(SERVEROBJS)
+	$(CC) $(FLAGS) $(addprefix $(OBJDIR)/,$^) -o $(addprefix $(BINDIR)/,$@)
 
 #clean directory
 clean:
@@ -57,4 +59,3 @@ clean:
 setup:
 	mkdir -p $(OBJDIR)
 	mkdir -p $(BINDIR)
-	mkdir -p $(OBJDIR)/$(TESTDIR)
