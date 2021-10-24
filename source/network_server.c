@@ -47,7 +47,7 @@ int network_main_loop(int listening_socket){
         return -1;
     }
     MessageT* msg;
-    if(msg = network_receive(sockfd) == NULL){
+    if((msg = network_receive(sockfd)) == NULL){
         return -1;
     }
     if (invoke(msg) < 0){
@@ -68,7 +68,7 @@ MessageT* network_receive(int client_socket){
     int len = MAX_BUF_SIZE;
     void* buf = malloc(len);
     
-    if(len = read(client_socket,buf,len) == -1){
+    if((len = read(client_socket,buf,len)) == -1){
         close(client_socket);
         return NULL;
     }

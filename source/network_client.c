@@ -24,13 +24,14 @@ int network_connect(struct rtable_t *rtable){
     rtable->socket.sin_port = rtable->port;
     if(inet_pton(AF_INET, rtable->ip, &rtable->socket.sin_addr) < 1){
         close(rtable->sockfd);
-        return NULL;
+        return -1;
     }
 
     if (connect(rtable->sockfd,(struct sockaddr *)&rtable->socket, sizeof(rtable->socket)) < 0) {
         close(rtable->sockfd);
-        return NULL;
+        return -1;
     }
+    return 0;
 }
 
 /* Esta função deve:
@@ -67,7 +68,7 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     len = MAX_BUF_SIZE; //whats the size of the response?
     buf = malloc(len);
 
-    if(len = read(rtable->sockfd, buf, len) == -1){
+    if((len = read(rtable->sockfd, buf, len)) == -1){
         return NULL;
     }
     
