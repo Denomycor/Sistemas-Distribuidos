@@ -97,7 +97,7 @@ int network_send(int client_socket, MessageT *msg){
         return -1;
     }
     free(buf);
-    //free client socket
+    close(client_socket);
     return 0;
 }
 

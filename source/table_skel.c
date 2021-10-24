@@ -1,9 +1,7 @@
 
-#include "sdmessage.pb-c.h"
-#include "table.h"
-#include "entry.h"
+#include "table_skel.h"
 #include "serialization.h"
-#include "string.h"
+#include <string.h>
 
 extern struct table_t* g_table;
 
