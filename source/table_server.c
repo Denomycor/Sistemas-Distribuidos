@@ -4,9 +4,10 @@
 #include "table_skel.h"
 
 struct table_t* g_table;
+int g_sockfd;
     
 
-int main(int argc, char *argv[]) {
+int main(int argc, char** argv) {
     
     if (argc != 3) {
         printf("Deve chamar com dois argumentos no seguinte formato -> [port] [n_of_lists]\n");
@@ -17,7 +18,7 @@ int main(int argc, char *argv[]) {
         printf("Couldn't create table program will exit");
         exit(0);
     }
-    short port = atoi(atoi(argv[2]));
+    short port = atoi(argv[2]);
 
     network_server_init(port);
 

@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 
 extern struct table_t* g_table;
+extern int g_sockfd;
 
 /* Função para preparar uma socket de receção de pedidos de ligação
  * num determinado porto.
@@ -60,11 +61,13 @@ int network_main_loop(int listening_socket){
  * - De-serializar estes bytes e construir a mensagem com o pedido,
  *   reservando a memória necessária para a estrutura MessageT.
  */
-MessageT *network_receive(int client_socket){
+MessageT* network_receive(int client_socket){
     int len = MAX_BUF_SIZE;
     void* buf = malloc(len);
     
-    len = read(client_socket,buf,len);
+    if(len = read(client_socket,buf,len)==-1){
+        return NULL;
+    }
     MessageT* msg = message_t__unpack(NULL, len, buf);
     free(buf);
     return msg;
@@ -88,6 +91,7 @@ int network_send(int client_socket, MessageT *msg){
         return -1;
     }
     free(buf);
+    //free client socket
     return 0;
 }
 

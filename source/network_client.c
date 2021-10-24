@@ -67,7 +67,10 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     len = MAX_BUF_SIZE; //whats the size of the response?
     buf = malloc(len);
 
-    len = read(rtable->sockfd, buf, len);
+    if(len = read(rtable->sockfd, buf, len) == -1){
+        return NULL;
+    }
+    
     MessageT* resp = message_t__unpack(NULL, len, buf);
 
     free(buf);
