@@ -3,7 +3,6 @@
 #include "client_stub.h"
 #include "network_client.h"
 #include "serialization.h"
-#include "table.h"
 #include "priv-func.h"
 #include <string.h>
 #include <stdio.h>
