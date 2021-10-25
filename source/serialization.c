@@ -4,8 +4,7 @@
  * João Anjos 54476
  */
 
-#include "data.h"
-#include "entry.h"
+#include "serialization.h"
 #include <stdlib.h>
 #include <string.h>
 

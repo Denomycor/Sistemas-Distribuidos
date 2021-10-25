@@ -1,12 +1,9 @@
 
 #include "network_client.h"
-#include "sdmessage.pb-c.h"
-
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,7 +16,6 @@
  * - Retornar 0 (OK) ou -1 (erro).
  */
 int network_connect(struct rtable_t *rtable){
-    
     rtable->socket.sin_family = AF_INET;
     rtable->socket.sin_port = rtable->port;
     if(inet_pton(AF_INET, rtable->ip, &rtable->socket.sin_addr) < 1){
@@ -27,10 +23,18 @@ int network_connect(struct rtable_t *rtable){
         return -1;
     }
 
+    int enable = 1;
+    if (setsockopt(rtable->sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+        close(rtable->sockfd);
+        return -1;
+    }
+    
+
     if (connect(rtable->sockfd,(struct sockaddr *)&rtable->socket, sizeof(rtable->socket)) < 0) {
         close(rtable->sockfd);
         return -1;
     }
+
     return 0;
 }
 
@@ -50,7 +54,6 @@ int network_connect(struct rtable_t *rtable){
 MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     int len = message_t__get_packed_size(msg);
     void* buf = malloc(len);
-
     if(buf == NULL){
         return NULL;
     }
@@ -65,7 +68,7 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     if(msg->data!=NULL)
         free(msg->data);
 
-    len = MAX_BUF_SIZE; //whats the size of the response?
+    len = MAX_BUF_SIZE; 
     buf = malloc(len);
 
     if((len = read(rtable->sockfd, buf, len)) == -1){

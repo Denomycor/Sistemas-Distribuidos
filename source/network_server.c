@@ -2,6 +2,7 @@
 #include "network_server.h"
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/signal.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
@@ -13,6 +14,9 @@ extern int g_sockfd;
  * Retornar descritor do socket (OK) ou -1 (erro).
  */
 int network_server_init(short port){
+    
+    signal(SIGPIPE, SIG_IGN);
+
     int sockfd;
     struct sockaddr_in server;
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
@@ -97,7 +101,7 @@ int network_send(int client_socket, MessageT *msg){
         return -1;
     }
     free(buf);
-    //free client socket
+    close(client_socket);
     return 0;
 }
 
