@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/signal.h>
 
 /* Esta função deve:
  * - Obter o endereço do servidor (struct sockaddr_in) a base da
@@ -27,6 +28,11 @@ int network_connect(struct rtable_t *rtable){
         close(rtable->sockfd);
         return -1;
     }
+
+    //FIXME: this should work based on google mas SO_NOSIGPIPE diz-me not defined
+    //int value = 1;
+    //setsockopt(rtable->sockfd, SOL_SOCKET, SO_NOSIGPIPE, &value, sizeof(value));
+
     return 0;
 }
 
