@@ -1,6 +1,7 @@
 #include "priv-func.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 int strchars(const char* str){
     int i=0;
@@ -32,3 +33,15 @@ char* sstrcpy(const char* str){
     return new;
 }
 
+void malloc_error(){
+    perror("malloc error\n");
+    exit(-1);
+}
+
+void* throw_malloc(size_t size, void(*error)()){
+    void* temp = malloc(size);
+    if(temp == NULL){
+        error();
+    }
+    return temp;
+}

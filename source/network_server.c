@@ -26,7 +26,6 @@ int network_server_init(short port){
     server.sin_family = AF_INET;
     server.sin_port = htons(port);
     server.sin_addr.s_addr = htonl(INADDR_ANY);
-
     if (bind(sockfd, (struct sockaddr *) &server, sizeof(server)) < 0){
         close(sockfd);
         return -1;
@@ -44,10 +43,10 @@ int network_server_init(short port){
  */
 int network_main_loop(int listening_socket){
     int sockfd;
-    if (listen(listening_socket, 0) < 0){
+    if (listen(listening_socket, 3) < 0){
         return -1;
     };
-    if ((sockfd = accept(listening_socket,NULL,0)) < 0){ //nao tenho 100% certeza se os dois ultimos parametros estao corretos
+    if ((sockfd = accept(listening_socket,NULL,0)) < 0){ //the struct sockaddr wont be necessary
         return -1;
     }
     MessageT* msg;
@@ -108,6 +107,6 @@ int network_send(int client_socket, MessageT *msg){
 /* A função network_server_close() liberta os recursos alocados por
  * network_server_init().
  */
-int network_server_close(){
+int network_server_close(int listening_socket){
     
 }

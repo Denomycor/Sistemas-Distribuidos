@@ -17,14 +17,14 @@
  */
 int network_connect(struct rtable_t *rtable){
     rtable->socket.sin_family = AF_INET;
-    rtable->socket.sin_port = rtable->port;
+    rtable->socket.sin_port = htons(rtable->port);
     if(inet_pton(AF_INET, rtable->ip, &rtable->socket.sin_addr) < 1){
         close(rtable->sockfd);
         return -1;
     }
 
     int enable = 1;
-    if (setsockopt(rtable->sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+    if (setsockopt(rtable->sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &enable, sizeof(int)) < 0) {
         close(rtable->sockfd);
         return -1;
     }
