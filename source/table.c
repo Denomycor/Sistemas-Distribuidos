@@ -102,7 +102,7 @@ int table_size(struct table_t *table){
  * reservando toda a memória necessária.
  */
 char **table_get_keys(struct table_t *table){
-    char** buffer = malloc(sizeof(char*)*table_size(table)+1);
+    char** buffer = malloc(sizeof(char*)*(table_size(table)+1));
     int index=0;
     for(int i=0; i<table->n; i++){
         struct node_t* node = table->lists_ptr[i]->head;

@@ -33,7 +33,7 @@ int main(int argc, char** argv){
             char com[RESP_SIZE];
             char* ops[3];
             int c;
-        }parser; //initialized to 0
+        }parser = {};
     do{
 
         

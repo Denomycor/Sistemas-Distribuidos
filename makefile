@@ -25,8 +25,7 @@ FLAGS =
 CC = gcc
 
 
-all: clean setup $(OBJFILES) $(TESTSOBJ) 
-#	make .TESTS
+all: clean setup table_client table_server
 	
 #.TESTS: $(TESTS)
 
