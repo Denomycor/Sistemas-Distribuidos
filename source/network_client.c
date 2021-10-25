@@ -23,6 +23,13 @@ int network_connect(struct rtable_t *rtable){
         return -1;
     }
 
+    int enable = 1;
+    if (setsockopt(rtable->sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+        close(rtable->sockfd);
+        return -1;
+    }
+    
+
     if (connect(rtable->sockfd,(struct sockaddr *)&rtable->socket, sizeof(rtable->socket)) < 0) {
         close(rtable->sockfd);
         return -1;
