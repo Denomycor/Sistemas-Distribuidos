@@ -46,11 +46,11 @@ client-lib.o: $(CLIENTLIBOBJS)
 
 #table_client.exe
 table_client: table_client.o client-lib.o
-	$(CC) $(FLAGS) $(OBJDIR)/$< $(LIBDIR)/client-lib.o -o $(addprefix $(BINDIR)/,$@)
+	$(CC) $(FLAGS) -I/usr/include $(OBJDIR)/$< $(LIBDIR)/client-lib.o -o $(addprefix $(BINDIR)/,$@) -L/usr/lib -lprotobuf-c
 
 #table_server.exe
 table_server: $(TABLEOBJ) $(SERVEROBJS)
-	$(CC) $(FLAGS) $(addprefix $(OBJDIR)/,$^) -o $(addprefix $(BINDIR)/,$@)
+	$(CC) $(FLAGS) -I/usr/include  $(addprefix $(OBJDIR)/,$^) -o $(addprefix $(BINDIR)/,$@) -L/usr/lib -lprotobuf-c
 
 #clean directory
 clean:

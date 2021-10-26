@@ -2,6 +2,8 @@
 #include "table.h"
 #include "network_server.h"
 #include "table_skel.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 struct table_t* g_table;
 int g_sockfd;

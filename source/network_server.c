@@ -2,9 +2,11 @@
 #include "network_server.h"
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/unistd.h>
 #include <sys/signal.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <stdlib.h>
 
 extern struct table_t* g_table;
 extern int g_sockfd;

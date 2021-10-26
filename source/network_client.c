@@ -1,5 +1,6 @@
 
 #include "network_client.h"
+#include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
