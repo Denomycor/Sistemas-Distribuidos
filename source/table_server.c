@@ -15,25 +15,27 @@ int main(int argc, char** argv) {
 
     if (argc != 3) {
         perror("Must be called with 2 arguments -> [port] [n_of_lists]\n");
-        exit(0);
+        exit(-1);
     }
 
     if (table_skel_init(atoi(argv[2]))) {
-        perror("Couldn't create table program will exit\n");
-        exit(0);
+        perror("Couldn't create table program will exit");
+        exit(-1);
     }
-    short port = atoi(argv[2]);
+    short port = atoi(argv[1]);
 
     listening_socket = network_server_init(port);
 
     while(1) {
         if(network_main_loop(listening_socket)==-1){
-            perror("Something went wrong\n");
+            perror("Something went wrong");
+            exit(-1);
         }
     }
 
     if(network_server_close(listening_socket)==-1){
-        perror("Couldn't close listening socket\n");
+        perror("Couldn't close listening socket");
+        exit(-1);
     }
     table_skel_destroy();
 

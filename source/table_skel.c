@@ -31,7 +31,7 @@ int invoke(MessageT *msg){
 
     if(msg->opcode == MESSAGE_T__OPCODE__OP_SIZE){
         msg->opcode++;
-        msg->c_type == MESSAGE_T__C_TYPE__CT_RESULT;
+        msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
         msg->data_size = 4;
         msg->data = malloc(sizeof(int));
         *msg->data = table_size(g_table);
@@ -42,14 +42,14 @@ int invoke(MessageT *msg){
         }else{
             msg->opcode++;
         }
-        msg->c_type == MESSAGE_T__C_TYPE__CT_NONE;
+        msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
         free(msg->data);
         msg->data_size = 0;
         msg->data = NULL;
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_GET){
         struct data_t* temp;
-        if(temp = table_get(g_table, msg->data) == NULL){
+        if((temp = table_get(g_table, msg->data)) == NULL){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
             msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
             free(msg->data);
@@ -82,7 +82,7 @@ int invoke(MessageT *msg){
         msg->c_type = MESSAGE_T__C_TYPE__CT_KEYS;
         msg->data_size=0;
 
-        char** k = table_get_keys(&g_table);
+        char** k = table_get_keys(g_table);
         int r=0;
         int buf_size=0;
 

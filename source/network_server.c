@@ -20,14 +20,15 @@ int network_server_init(short port){
     signal(SIGPIPE, SIG_IGN);
 
     int sockfd;
-    struct sockaddr_in server;
+    struct sockaddr_in server = {};
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
         return -1;
     }
 
     server.sin_family = AF_INET;
     server.sin_port = htons(port);
-    server.sin_addr.s_addr = htonl(INADDR_ANY);
+    server.sin_addr.s_addr = INADDR_ANY;
+    
     if (bind(sockfd, (struct sockaddr *) &server, sizeof(server)) < 0){
         close(sockfd);
         return -1;
@@ -45,7 +46,7 @@ int network_server_init(short port){
  */
 int network_main_loop(int listening_socket){
     int sockfd;
-    if (listen(listening_socket, 3) < 0){
+    if (listen(listening_socket, 0) < 0){
         return -1;
     };
     if ((sockfd = accept(listening_socket,NULL,0)) < 0){ //the struct sockaddr wont be necessary
@@ -110,5 +111,5 @@ int network_send(int client_socket, MessageT *msg){
  * network_server_init().
  */
 int network_server_close(int listening_socket){
-    
+    return close(listening_socket);
 }
