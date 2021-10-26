@@ -5,6 +5,6 @@
 
 int read_all(int sockfd, char** data);
 
-int write_all(int sockfd, int size, char* data);
+int write_all(int sockfd, char* data, int size);
 
 #endif

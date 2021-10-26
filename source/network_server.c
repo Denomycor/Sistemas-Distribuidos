@@ -1,5 +1,6 @@
 
 #include "network_server.h"
+#include "message.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/unistd.h>
@@ -71,10 +72,10 @@ int network_main_loop(int listening_socket){
  *   reservando a memória necessária para a estrutura MessageT.
  */
 MessageT* network_receive(int client_socket){
-    int len = MAX_BUF_SIZE;
-    void* buf = malloc(len);
+    void* buf;
+    int len;
     
-    if((len = read(client_socket,buf,len)) == -1){
+    if((len = read_all(client_socket,buf)) == -1){
         close(client_socket);
         return NULL;
     }
@@ -98,7 +99,7 @@ int network_send(int client_socket, MessageT *msg){
     }
     message_t__pack(msg,buf);
     message_t__free_unpacked(msg,NULL);
-    if(write(client_socket,buf,len) == -1){
+    if(write_all(client_socket,buf,len) == -1){
         close(client_socket);
         return -1;
     }
