@@ -53,10 +53,10 @@ int main(int argc, char** argv){
         }
         parser.ops[parser.c++] = last;
 
-        if(parser.ops[0] == "size"){
+        if(strcmp(parser.ops[0],"size")){
             printf("The size of the table is: %i\n", rtable_size(table));
 
-        }else if(parser.ops[0] == "del"){
+        }else if(strcmp(parser.ops[0], "del")){
             int res = rtable_del(table, sstrcpy(parser.ops[1]));
             if(res!=-1){
                 printf("The entry was deleted\n");
@@ -64,7 +64,7 @@ int main(int argc, char** argv){
                 printf("Error deleting the entry\n");
             }
 
-        }else if(parser.ops[0] == "get"){
+        }else if(strcmp(parser.ops[0], "get")){
             struct data_t* data = rtable_get(table, sstrcpy(parser.ops[1]));
             if(data==NULL){
                 printf("The entry wasn't found\n");
@@ -73,7 +73,7 @@ int main(int argc, char** argv){
             }
             data_destroy(data);
 
-        }else if(parser.ops[0] == "put"){
+        }else if(strcmp(parser.ops[0], "put")){
             struct data_t d = {strlen(parser.ops[2]),parser.ops+2};
             struct entry_t e = {parser.ops[1], &d};
             int res = rtable_put(table, &e);
@@ -83,21 +83,21 @@ int main(int argc, char** argv){
                 printf("Error adding the entry\n");
             }
 
-        }else if(parser.ops[0] == "getKeys"){
+        }else if(strcmp(parser.ops[0], "getKeys")){
             char** k = rtable_get_keys(table);
             for(int i=0; k[i]!=NULL;i++){
                 printf("%s\n", k[i]);
             }
             rtable_free_keys(k);
 
-        }else if(parser.ops[0] == "table_print"){
+        }else if(strcmp(parser.ops[0], "table_print")){
             rtable_print(table);
 
-        }else if(parser.ops[0] != "quit"){
+        }else if(!strcmp(parser.ops[0], "quit")){
             printf("%s", "Please insert a valid command\n");
         }
 
-    }while(parser.ops[0] != "quit");
+    }while(!strcmp(parser.ops[0], "quit"));
 
     if(network_close(table) == -1){
         perror("Error - couldn't close the socket");
