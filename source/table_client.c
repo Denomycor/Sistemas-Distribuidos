@@ -7,6 +7,7 @@
 #include <string.h>
 
 #define RESP_SIZE 512
+#define RESP_SIZE_S "512"
 
 /*TODO on client.exe
     -finish main func
@@ -45,11 +46,11 @@ int main(int argc, char** argv){
         
 
         printf("\n 0 - size\n 1 - del<key>\n 2 - get<key>\n 3 - put<key><data>\n 4 - getkeys\n 5 - table_print\n 6 - quit\n Please choose from 0 to 6 what you wish to do: ");
-        scanf("%s", parser.com);
-        
+        scanf(" %" RESP_SIZE_S "[0-9a-zA-Z ]", parser.com);
 
         char *reader = parser.com, *last = parser.com;
         while(*reader!='\0'){
+
             if(*reader == ' '){
                 *reader = '\0';
                 parser.ops[parser.c++] = last;
@@ -58,7 +59,6 @@ int main(int argc, char** argv){
             reader++;
         }
         parser.ops[parser.c++] = last;
-
         if(strcmp(parser.ops[0],"size")==0){
             printf("The size of the table is: %i\n", rtable_size(table));
 
