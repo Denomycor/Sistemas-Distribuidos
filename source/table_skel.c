@@ -2,6 +2,7 @@
 #include "table_skel.h"
 #include "serialization.h"
 #include <string.h>
+#include <stdlib.h>
 
 extern struct table_t* g_table;
 
