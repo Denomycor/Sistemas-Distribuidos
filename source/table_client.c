@@ -102,7 +102,7 @@ int main(int argc, char** argv){
         }else if(!strcmp(parser.ops[0], "quit")==0){
             printf("%s", "Please insert a valid command\n");
         }
-
+        memset(parser.com, 0, RESP_SIZE);
     }while(!strcmp(parser.ops[0], "quit")==0);
 
     if(network_close(table) == -1){
