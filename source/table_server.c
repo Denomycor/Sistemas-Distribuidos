@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     int listening_socket;
 
     if (argc != 3) {
-        perror("Must be called with 2 arguments -> [port] [n_of_lists]\n");
+        printf("Must be called with 2 arguments -> [port] [n_of_lists]\n");
         exit(-1);
     }
 
@@ -28,8 +28,8 @@ int main(int argc, char** argv) {
 
     while(1) {
         if(network_main_loop(listening_socket)==-1){
-            perror("Something went wrong");
-            exit(-1);
+            printf("Something went wrong - closing server");
+            break;
         }
     }
 

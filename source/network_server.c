@@ -82,7 +82,7 @@ MessageT* network_receive(int client_socket){
     uint8_t* buf;
     int len;
     
-    if((len = read_all(client_socket, &buf)) == -1){
+    if((len = read_all(client_socket,&buf)) == -1){
         close(client_socket);
         return NULL;
     }

@@ -21,7 +21,7 @@ int main(int argc, char** argv){
     struct rtable_t* table;
 
     if(argc != 2){
-        perror("Error - must be called with <ip>:<port>\n");
+        printf("Error - must be called with <ip>:<port>\n");
         return -1;
     }
 
@@ -47,6 +47,7 @@ int main(int argc, char** argv){
 
         char *reader = parser.com, *last = parser.com;
 
+
         while(*reader!='\0' && parser.c < 3 ){
             if(*reader == ' '){
                 *reader = '\0';
@@ -55,7 +56,8 @@ int main(int argc, char** argv){
             }
             reader++;
         }
-        if ( parser.c == 3 ) {
+
+        if(parser.c>=3){
             continue;
         }
 
