@@ -1,24 +1,27 @@
 #include "message.h"
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <string.h>
 
-int read_all(int sockfd, char** data) {
+int read_all(int sockfd, uint8_t** data) {
     int alreadyRead = 0;
     int size;
 
-    //FIXME: qual e o tamanho do unsigned int??
-    char *tmp = malloc(UNSIGNED_SIZE);
+    int* tmp = malloc(UNSIGNED_SIZE);
 
     read(sockfd, tmp, UNSIGNED_SIZE);
 
-    //TODO: perceber como usar as funcoes htonl e ntohl
-    size = 10;
-    data = malloc(size);
+    size = ntohl(*tmp);
+    *data = malloc(size);
 
-    memcpy(data, tmp, UNSIGNED_SIZE);
+    memcpy(*data, tmp, UNSIGNED_SIZE);
     alreadyRead += UNSIGNED_SIZE;
+
     free(tmp);
 
     while (alreadyRead != size) {
-        int readNow = read(sockfd, data+alreadyRead, UNSIGNED_SIZE);
+        int readNow = read(sockfd, *data+alreadyRead, UNSIGNED_SIZE);
         if ( readNow == -1 ) {
             return -1;
         }

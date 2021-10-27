@@ -55,7 +55,7 @@ int network_connect(struct rtable_t *rtable){
  */
 MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     int len = message_t__get_packed_size(msg);
-    void* buf = malloc(len);
+    uint8_t* buf = malloc(len);
     if(buf == NULL){
         return NULL;
     }
@@ -70,7 +70,7 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     if(msg->data!=NULL)
         free(msg->data);
 
-    if((len = read_all(rtable->sockfd, buf)) == -1){
+    if((len = read_all(rtable->sockfd, &buf)) == -1){
         return NULL;
     }
     

@@ -36,21 +36,23 @@ int main(int argc, char** argv){
         return -1;
     }
 
-        struct {
-            char com[RESP_SIZE];
-            char* ops[3];
-            int c;
-        }parser = {};
-    do{
+    struct {
+        char com[RESP_SIZE];
+        char* ops[3];
+        int c;
+    }parser;
 
+    do {
+        parser.c = 0;
+        memset(parser.ops, 0, 3*sizeof(char*));
+        memset(parser.com, 0, RESP_SIZE);
         
-
         printf("\n 0 - size\n 1 - del<key>\n 2 - get<key>\n 3 - put<key><data>\n 4 - getkeys\n 5 - table_print\n 6 - quit\n Please choose from 0 to 6 what you wish to do: ");
         scanf(" %" RESP_SIZE_S "[0-9a-zA-Z ]", parser.com);
 
         char *reader = parser.com, *last = parser.com;
-        while(*reader!='\0'){
 
+        while(*reader!='\0' && parser.c < 3 ){
             if(*reader == ' '){
                 *reader = '\0';
                 parser.ops[parser.c++] = last;
@@ -58,7 +60,12 @@ int main(int argc, char** argv){
             }
             reader++;
         }
+        if ( parser.c == 3 ) {
+            continue;
+        }
+
         parser.ops[parser.c++] = last;
+
         if(strcmp(parser.ops[0],"size")==0){
             printf("The size of the table is: %i\n", rtable_size(table));
 
@@ -99,11 +106,10 @@ int main(int argc, char** argv){
         }else if(strcmp(parser.ops[0], "table_print")==0){
             rtable_print(table);
 
-        }else if(!strcmp(parser.ops[0], "quit")==0){
+        }else if(strcmp(parser.ops[0], "quit") != 0){
             printf("%s", "Please insert a valid command\n");
         }
-
-    }while(!strcmp(parser.ops[0], "quit")==0);
+    } while( strcmp(parser.ops[0], "quit") != 0 );
 
     if(network_close(table) == -1){
         perror("Error - couldn't close the socket");
