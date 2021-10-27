@@ -25,17 +25,6 @@ int main(int argc, char** argv){
         return -1;
     }
 
-
-    if((table = rtable_connect(argv[1])) == NULL){
-        perror("Error - couldn't open socket");
-        return -1;
-    }
-
-    if(network_connect(table)==-1){
-        perror("Error - couldn't connect to server");
-        return -1;
-    }
-
     struct {
         char com[RESP_SIZE];
         char* ops[3];
@@ -43,12 +32,18 @@ int main(int argc, char** argv){
     }parser;
 
     do {
+        if((table = rtable_connect(argv[1])) == NULL){
+            perror("Error - couldn't open socket");
+            return -1;
+        }
+
         parser.c = 0;
         memset(parser.ops, 0, 3*sizeof(char*));
         memset(parser.com, 0, RESP_SIZE);
         
         printf("\n 0 - size\n 1 - del<key>\n 2 - get<key>\n 3 - put<key><data>\n 4 - getkeys\n 5 - table_print\n 6 - quit\n Please choose from 0 to 6 what you wish to do: ");
         scanf(" %" RESP_SIZE_S "[0-9a-zA-Z ]", parser.com);
+        printf("\n\n");
 
         char *reader = parser.com, *last = parser.com;
 
@@ -109,12 +104,10 @@ int main(int argc, char** argv){
         }else if(strcmp(parser.ops[0], "quit") != 0){
             printf("%s", "Please insert a valid command\n");
         }
-    } while( strcmp(parser.ops[0], "quit") != 0 );
 
-    if(network_close(table) == -1){
-        perror("Error - couldn't close the socket");
-        return -1;
-    }
+        rtable_disconnect(table);
+
+    } while( strcmp(parser.ops[0], "quit") != 0 );
 
     return 0;
 }

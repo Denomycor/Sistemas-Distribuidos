@@ -34,6 +34,9 @@ struct rtable_t *rtable_connect(const char *address_port){
         return NULL;
     }
 
+    if(network_connect(tcp_socket) == -1) {
+        return NULL;
+    }
     return tcp_socket;
 }
 

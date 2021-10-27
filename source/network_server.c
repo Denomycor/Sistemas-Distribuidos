@@ -27,6 +27,12 @@ int network_server_init(short port){
         return -1;
     }
 
+    int enable = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &enable, sizeof(int)) < 0) {
+        close(sockfd);
+        return -1;
+    }
+
     server.sin_family = AF_INET;
     server.sin_port = htons(port);
     server.sin_addr.s_addr = INADDR_ANY;
@@ -100,7 +106,7 @@ int network_send(int client_socket, MessageT *msg){
     }
     message_t__pack(msg,buf);
     message_t__free_unpacked(msg,NULL);
-    printf("vou mandar tipo %i de cenas", len);
+
     if(write_all(client_socket,buf,len) == -1){
         close(client_socket);
         return -1;

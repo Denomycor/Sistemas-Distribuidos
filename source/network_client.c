@@ -25,13 +25,6 @@ int network_connect(struct rtable_t *rtable){
         return -1;
     }
 
-    int enable = 1;
-    if (setsockopt(rtable->sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &enable, sizeof(int)) < 0) {
-        close(rtable->sockfd);
-        return -1;
-    }
-    
-
     if (connect(rtable->sockfd,(struct sockaddr *)&rtable->socket, sizeof(rtable->socket)) < 0) {
         close(rtable->sockfd);
         return -1;
@@ -55,6 +48,7 @@ int network_connect(struct rtable_t *rtable){
  */
 MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     int len = message_t__get_packed_size(msg);
+
     uint8_t* buf = malloc(len);
     if(buf == NULL){
         return NULL;
