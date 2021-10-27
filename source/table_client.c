@@ -80,7 +80,11 @@ int main(int argc, char** argv){
             if(data==NULL){
                 printf("The entry wasn't found\n");
             }else{
-                printf("The value is %.*x\n", data->datasize, data->data);
+                printf("The value is: ");
+                for(int i=0; i<data->datasize; i++){
+                    printf("%x", *((char*)data->data+i));
+                }
+                printf("\n");
             }
             data_destroy(data);
 
