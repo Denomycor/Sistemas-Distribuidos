@@ -70,7 +70,7 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     if(msg->data!=NULL)
         free(msg->data);
 
-    if((len = read_all(rtable->sockfd, buf)) == -1){
+    if((len = read_all(rtable->sockfd, &buf)) == -1){
         return NULL;
     }
     

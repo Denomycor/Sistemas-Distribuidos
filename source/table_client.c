@@ -21,7 +21,7 @@ int main(int argc, char** argv){
     struct rtable_t* table;
 
     if(argc != 2){
-        perror("Error - must be called with <ip>:<port>\n");
+        printf("Error - must be called with <ip>:<port>\n");
         return -1;
     }
 
@@ -40,16 +40,16 @@ int main(int argc, char** argv){
             char com[RESP_SIZE];
             char* ops[3];
             int c;
-        }parser = {};
+        }parser;
     do{
-
+        memset(&parser, 0, sizeof(parser));
         
 
         printf("\n 0 - size\n 1 - del<key>\n 2 - get<key>\n 3 - put<key><data>\n 4 - getkeys\n 5 - table_print\n 6 - quit\n Please choose from 0 to 6 what you wish to do: ");
         scanf(" %" RESP_SIZE_S "[0-9a-zA-Z ]", parser.com);
 
         char *reader = parser.com, *last = parser.com;
-        while(*reader!='\0'){
+        while(*reader!='\0' && parser.c<3){
 
             if(*reader == ' '){
                 *reader = '\0';
@@ -58,6 +58,11 @@ int main(int argc, char** argv){
             }
             reader++;
         }
+
+        if(parser.c>=3){
+            continue;
+        }
+
         parser.ops[parser.c++] = last;
         if(strcmp(parser.ops[0],"size")==0){
             printf("The size of the table is: %i\n", rtable_size(table));
