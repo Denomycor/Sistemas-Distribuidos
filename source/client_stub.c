@@ -60,14 +60,14 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
     message_t__init(&msg);
     msg.opcode = MESSAGE_T__OPCODE__OP_PUT;
     msg.c_type = MESSAGE_T__C_TYPE__CT_ENTRY;
-    msg.data_size = entry_to_buffer(entry, &msg.data);
+    msg.buffer.len = entry_to_buffer(entry, &msg.buffer.data);
 
     MessageT* resp = network_send_receive(rtable, &msg);
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
+        message_t__free_unpacked(resp, NULL);
         return -1;
     }
-
     message_t__free_unpacked(resp, NULL);
 
     return 0; 
@@ -82,16 +82,17 @@ struct data_t *rtable_get(struct rtable_t *rtable, char *key){
     message_t__init(&msg);
     msg.opcode = MESSAGE_T__OPCODE__OP_GET;
     msg.c_type = MESSAGE_T__C_TYPE__CT_KEY;
-    msg.data_size = strlen(key)+1; //has to be null terminated
-    msg.data = key;
+    msg.buffer.len = strlen(key)+1; //has to be null terminated
+    msg.buffer.data = key;
 
     MessageT* resp = network_send_receive(rtable, &msg);
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
+        message_t__free_unpacked(resp, NULL);
         return NULL;
     }
 
-    struct data_t*const data = buffer_to_data(resp->data, resp->data_size);
+    struct data_t*const data = buffer_to_data(resp->buffer.data, resp->buffer.len);
 
     message_t__free_unpacked(resp, NULL);
 
@@ -108,15 +109,15 @@ int rtable_del(struct rtable_t *rtable, char *key){
     message_t__init(&msg);
     msg.opcode = MESSAGE_T__OPCODE__OP_DEL;
     msg.c_type = MESSAGE_T__C_TYPE__CT_KEY;
-    msg.data_size = strlen(key)+1; //has to be null terminated
-    msg.data = key;
+    msg.buffer.len = strlen(key)+1; //has to be null terminated
+    msg.buffer.data = key;
 
     MessageT* resp = network_send_receive(rtable, &msg);
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
+        message_t__free_unpacked(resp, NULL);
         return -1;
     }
-
     message_t__free_unpacked(resp, NULL);
 
     return 0;
@@ -129,16 +130,17 @@ int rtable_size(struct rtable_t *rtable){
     message_t__init(&msg);
     msg.opcode = MESSAGE_T__OPCODE__OP_SIZE;
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
-    msg.data_size = 0;
-    msg.data = NULL;
+    msg.buffer.len = 0;
+    msg.buffer.data = NULL;
 
     MessageT* resp = network_send_receive(rtable, &msg);
 
     if(resp==NULL){
+        message_t__free_unpacked(resp, NULL);
         return -1;
     }
 
-    int result = *((int*)resp->data);
+    int result = *(resp->buffer.data);
 
     message_t__free_unpacked(resp, NULL);
     return result;
@@ -152,19 +154,20 @@ char **rtable_get_keys(struct rtable_t *rtable){
     message_t__init(&msg);
     msg.opcode = MESSAGE_T__OPCODE__OP_GETKEYS;
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
-    msg.data_size = 0;
-    msg.data = NULL;
+    msg.buffer.len = 0;
+    msg.buffer.data = NULL;
 
     MessageT* resp = network_send_receive(rtable, &msg);
 
     if(resp == NULL){
+        message_t__free_unpacked(resp, NULL);
         return NULL;
     }
 
-    char** result = malloc((resp->data_size+1)*sizeof(char*)); //data_size = nº keys
-    char* keys = malloc(strlen(resp->data)+1);
-    strcpy(resp->data,keys);
-    for(int i = 0; i < resp->data_size; i++){
+    char** result = malloc((resp->buffer.len+1)*sizeof(char*)); //buffer.len = nº keys
+    char* keys = malloc(strlen(resp->buffer.data)+1);
+    strcpy(resp->buffer.data,keys);
+    for(int i = 0; i < resp->buffer.len; i++){
         int length = 1;
         while(*(keys++)!='\0'){
             length++;
@@ -172,7 +175,7 @@ char **rtable_get_keys(struct rtable_t *rtable){
         result[i] = subsstr(keys,0,length);
         keys = subsstr(keys,length,strlen(keys)+1);
     }
-    result[resp->data_size+1] = NULL;
+    result[resp->buffer.len+1] = NULL;
 
     //Free response
     free(keys);
@@ -196,12 +199,12 @@ void rtable_print(struct rtable_t *rtable) {
     MessageT msg;
     msg.opcode = MESSAGE_T__OPCODE__OP_PRINT;
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
-    msg.data_size = 0;
-    msg.data = NULL;
+    msg.buffer.len = 0;
+    msg.buffer.data = NULL;
     
     MessageT* rsp = network_send_receive(rtable, &msg);
 
-    printf("%s", rsp->data);
+    printf("%s", rsp->buffer.data);
 
     message_t__free_unpacked(rsp,NULL);
 }

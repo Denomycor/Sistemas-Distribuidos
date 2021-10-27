@@ -32,40 +32,40 @@ int invoke(MessageT *msg){
     if(msg->opcode == MESSAGE_T__OPCODE__OP_SIZE){
         msg->opcode++;
         msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
-        msg->data_size = 4;
-        msg->data = malloc(sizeof(int));
-        *msg->data = table_size(g_table);
+        msg->buffer.len = 4;
+        msg->buffer.data = malloc(sizeof(int));
+        *msg->buffer.data = table_size(g_table);
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_DEL){
-        if(table_del(g_table, msg->data)==-1){
+        if(table_del(g_table, msg->buffer.data)==-1){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
         }else{
             msg->opcode++;
         }
         msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
-        free(msg->data);
-        msg->data_size = 0;
-        msg->data = NULL;
+        free(msg->buffer.data);
+        msg->buffer.len = 0;
+        msg->buffer.data = NULL;
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_GET){
         struct data_t* temp;
-        if((temp = table_get(g_table, msg->data)) == NULL){
+        if((temp = table_get(g_table, msg->buffer.data)) == NULL){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
             msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
-            free(msg->data);
-            msg->data = NULL;
-            msg->data_size = 0;
+            free(msg->buffer.data);
+            msg->buffer.data = NULL;
+            msg->buffer.len = 0;
 
         }else{
             msg->opcode++;
             msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
-            free(msg->data);
-            msg->data_size = data_to_buffer(temp, &msg->data);
+            free(msg->buffer.data);
+            msg->buffer.len = data_to_buffer(temp, &msg->buffer.data);
         }
         data_destroy(temp);
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_PUT){
-        struct entry_t* temp = buffer_to_entry(msg->data, msg->data_size);
+        struct entry_t* temp = buffer_to_entry(msg->buffer.data, msg->buffer.len);
         if(table_put(g_table, temp->key, temp->value)==-1){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
         }else{
@@ -73,21 +73,21 @@ int invoke(MessageT *msg){
         }
         entry_destroy(temp);
         msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
-        free(msg->data);
-        msg->data = NULL;
-        msg->data_size = 0;
+        free(msg->buffer.data);
+        msg->buffer.data = NULL;
+        msg->buffer.len = 0;
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_GETKEYS){
         msg->opcode++;
         msg->c_type = MESSAGE_T__C_TYPE__CT_KEYS;
-        msg->data_size=0;
+        msg->buffer.len=0;
 
         char** k = table_get_keys(g_table);
         int r=0;
         int buf_size=0;
 
         while(k[r]!=NULL){  
-            msg->data_size++; //count nr of strings
+            msg->buffer.len++; //count nr of strings
             buf_size += strlen(k[r++])+1; //acc for chars in single buff size
         }
 
@@ -102,15 +102,15 @@ int invoke(MessageT *msg){
             r++;
         }
 
-        msg->data = buf;
+        msg->buffer.data = buf;
 
         table_free_keys(k);
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_PRINT){
         msg->opcode++;
         msg->c_type = MESSAGE_T__C_TYPE__CT_TABLE;
-        msg->data = table_to_string(g_table);
-        msg->data_size = strlen(msg->data)+1;
+        msg->buffer.data = table_to_string(g_table);
+        msg->buffer.len = strlen(msg->buffer.data)+1;
 
 
     }else{

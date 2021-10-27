@@ -5,6 +5,7 @@
 #include "priv-func.h"
 #include <stdio.h>
 #include <string.h>
+#include <serialization.h>
 
 #define RESP_SIZE 512
 #define RESP_SIZE_S "512"
@@ -84,7 +85,7 @@ int main(int argc, char** argv){
             data_destroy(data);
 
         }else if(strcmp(parser.ops[0], "put")==0){
-            struct data_t d = {strlen(parser.ops[2]),parser.ops+2};
+            struct data_t d = {strlen(parser.ops[2]),parser.ops[2]};
             struct entry_t e = {parser.ops[1], &d};
             int res = rtable_put(table, &e);
             if(res!=-1){
@@ -93,7 +94,7 @@ int main(int argc, char** argv){
                 printf("Error adding the entry\n");
             }
 
-        }else if(strcmp(parser.ops[0], "getKeys")==0){
+        }else if(strcmp(parser.ops[0], "getkeys")==0){
             char** k = rtable_get_keys(table);
             for(int i=0; k[i]!=NULL;i++){
                 printf("%s\n", k[i]);
