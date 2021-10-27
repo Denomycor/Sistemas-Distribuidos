@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 extern struct table_t* g_table;
 extern int g_sockfd;
@@ -72,7 +73,7 @@ int network_main_loop(int listening_socket){
  *   reservando a memória necessária para a estrutura MessageT.
  */
 MessageT* network_receive(int client_socket){
-    void* buf;
+    uint8_t* buf;
     int len;
     
     if((len = read_all(client_socket,&buf)) == -1){
@@ -99,6 +100,7 @@ int network_send(int client_socket, MessageT *msg){
     }
     message_t__pack(msg,buf);
     message_t__free_unpacked(msg,NULL);
+    printf("vou mandar tipo %i de cenas", len);
     if(write_all(client_socket,buf,len) == -1){
         close(client_socket);
         return -1;

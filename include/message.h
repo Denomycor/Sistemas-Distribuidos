@@ -1,9 +1,11 @@
 #ifndef _NETWORK_H
 #define _NETWORK_H
 
-#define UNSIGNED_SIZE sizeof(char)
+#include <stdint.h>
 
-int read_all(int sockfd, char** data);
+#define UNSIGNED_SIZE sizeof(uint32_t)
+
+int read_all(int sockfd, uint8_t** data);
 
 int write_all(int sockfd, char* data, int size);
 
