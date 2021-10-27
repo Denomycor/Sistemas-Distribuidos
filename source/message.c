@@ -1,4 +1,4 @@
-#include "network.h"
+#include "message.h"
 
 int read_all(int sockfd, char** data) {
     int alreadyRead = 0;
@@ -27,7 +27,7 @@ int read_all(int sockfd, char** data) {
     return alreadyRead;
 }
 
-int write_all(int sockfd, int size, char* data) {
+int write_all(int sockfd, char* data, int size) {
     int sent = 0;
 
     while (sent != size) {

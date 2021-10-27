@@ -1,5 +1,6 @@
 
 #include "network_client.h"
+#include "message.h"
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -60,7 +61,7 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     }
     message_t__pack(msg, buf);
 
-    if((write(rtable->sockfd,buf,len)) == -1){
+    if((write_all(rtable->sockfd,buf,len)) == -1){
         return NULL;
     }
 
@@ -69,10 +70,7 @@ MessageT *network_send_receive(struct rtable_t * rtable, MessageT *msg){
     if(msg->data!=NULL)
         free(msg->data);
 
-    len = MAX_BUF_SIZE; 
-    buf = malloc(len);
-
-    if((len = read(rtable->sockfd, buf, len)) == -1){
+    if((len = read_all(rtable->sockfd, buf)) == -1){
         return NULL;
     }
     
