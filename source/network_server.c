@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 extern struct table_t* g_table;
 extern int g_sockfd;
