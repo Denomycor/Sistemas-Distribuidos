@@ -84,15 +84,14 @@ int invoke(MessageT *msg){
 
         char** k = table_get_keys(g_table);
         int r=0;
-        int buf_size=0;
+        msg->buffer.len=0;
 
-        while(k[r]!=NULL){  
-            msg->buffer.len++; //count nr of strings
-            buf_size += strlen(k[r++])+1; //acc for chars in single buff size
+        while(k[r]!=NULL){
+            msg->buffer.len += strlen(k[r++])+1; //acc for chars in single buff size
         }
 
-        buf_size = buf_size*sizeof(char); //multiply for sizeof chars
-        char* buf = malloc(buf_size); //aloc single buf
+        msg->buffer.len = msg->buffer.len*sizeof(char); //multiply for sizeof chars
+        char* buf = malloc(msg->buffer.len); //aloc single buf
 
         r=0;
         char* l = buf;
