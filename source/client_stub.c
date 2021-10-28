@@ -190,9 +190,7 @@ char **rtable_get_keys(struct rtable_t *rtable){
 /* Liberta a memória alocada por rtable_get_keys().
  */
 void rtable_free_keys(char **keys){
-    for(int i=0; keys[i]!=NULL; i++){
-        free(keys[i]);
-    }
+    free(*keys);
     free(keys);
 }
 
