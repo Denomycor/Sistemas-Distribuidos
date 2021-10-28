@@ -164,21 +164,24 @@ char **rtable_get_keys(struct rtable_t *rtable){
         return NULL;
     }
 
-    char** result = malloc((resp->buffer.len+1)*sizeof(char*)); //buffer.len = nº keys
-    char* keys = malloc(strlen(resp->buffer.data)+1);
-    strcpy(resp->buffer.data,keys);
-    for(int i = 0; i < resp->buffer.len; i++){
-        int length = 1;
-        while(*(keys++)!='\0'){
-            length++;
+    int nkeys = 0;
+    for(char* i = resp->buffer.data; i < resp->buffer.data+resp->buffer.len; i++){
+        if(*i == '\0'){
+            nkeys++;
         }
-        result[i] = subsstr(keys,0,length);
-        keys = subsstr(keys,length,strlen(keys)+1);
     }
-    result[resp->buffer.len+1] = NULL;
+    char** result = malloc((nkeys+1)*sizeof(char*)); 
+    char* keys = resp->buffer.data;
+    resp->buffer.data = NULL;
+    resp->buffer.len = 0;
+    char* keyref = keys;
+    for(int i = 0; i < nkeys; i++){
+        result[i] = keyref;
+        keyref += strlen(keyref)+1;
+    }
+    result[nkeys] = NULL;
 
     //Free response
-    free(keys);
     message_t__free_unpacked(resp, NULL);
     return result;
 
