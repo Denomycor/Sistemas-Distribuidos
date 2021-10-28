@@ -10,13 +10,6 @@
 #define RESP_SIZE 512
 #define RESP_SIZE_S "512"
 
-/*TODO on client.exe
-    -finish main func
-    -verify if the rtable disconnect and close are done right
-    -check for memory leaks and inconsistencies
-    -op print
-
-*/
 int main(int argc, char** argv){
 
     struct rtable_t* table;
@@ -43,7 +36,7 @@ int main(int argc, char** argv){
         memset(parser.com, 0, RESP_SIZE);
         
         printf("\n 0 - size\n 1 - del<key>\n 2 - get<key>\n 3 - put<key><data>\n 4 - getkeys\n 5 - table_print\n 6 - quit\n Please choose from 0 to 6 what you wish to do: ");
-        scanf(" %" RESP_SIZE_S "[0-9a-zA-Z ]", parser.com);
+        scanf(" %" RESP_SIZE_S "[0-9a-zA-Z _]", parser.com);
         printf("\n\n");
 
         char *reader = parser.com, *last = parser.com;

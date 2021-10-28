@@ -197,6 +197,7 @@ void rtable_free_keys(char **keys){
  */
 void rtable_print(struct rtable_t *rtable) {
     MessageT msg;
+    message_t__init(&msg);
     msg.opcode = MESSAGE_T__OPCODE__OP_PRINT;
     msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
     msg.buffer.len = 0;

@@ -158,6 +158,14 @@ void list_print(struct list_t *list) {
 char* list_to_string(const struct list_t *list) {
     struct node_t* iter = list->head;
     size_t n_chars = 0;
+    
+    //if list is empty, return just an \0 so append can work
+    if(iter == NULL){
+        char* x = malloc(1);
+        *x = '\0';
+        return x;
+    }
+
     while(iter != NULL) {
         n_chars += strlen(iter->entry->key) + 2 + iter->entry->value->datasize + 1;
         iter = iter->next;
@@ -172,9 +180,9 @@ char* list_to_string(const struct list_t *list) {
         memcpy(ptr, iter->entry->key, n_chars*sizeof(char));
         ptr+=n_chars;
 
-        *ptr = ':';
+        *ptr = '-';
         ptr++;
-        *ptr = ':';
+        *ptr = '>';
         ptr++;
 
         memcpy(ptr, iter->entry->value->data, iter->entry->value->datasize);
@@ -186,7 +194,7 @@ char* list_to_string(const struct list_t *list) {
         iter = iter->next;
     }
 
-    *(ptr-1) = '\n';
-    *ptr = '\0';
+    *(ptr-1) = '\n'; //replace last ' ' with \n
+    *ptr = '\0'; //null terminate the string
     return buf;
 }

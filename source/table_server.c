@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
         perror("Couldn't create table program will exit");
         exit(-1);
     }
+
     short port = atoi(argv[1]);
 
     listening_socket = network_server_init(port);
@@ -29,7 +30,7 @@ int main(int argc, char** argv) {
     while(1) {
         if(network_main_loop(listening_socket)==-1){
             printf("Something went wrong - closing server");
-            break;
+            continue;
         }
     }
 
