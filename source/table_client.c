@@ -61,7 +61,7 @@ int main(int argc, char** argv){
             printf("The size of the table is: %i\n", rtable_size(table));
 
         }else if(strcmp(parser.ops[0], "del")==0){
-            int res = rtable_del(table, sstrcpy(parser.ops[1]));
+            int res = rtable_del(table, strdup(parser.ops[1]));
             if(res!=-1){
                 printf("The entry was deleted\n");
             }else{
@@ -69,7 +69,7 @@ int main(int argc, char** argv){
             }
 
         }else if(strcmp(parser.ops[0], "get")==0){
-            struct data_t* data = rtable_get(table, sstrcpy(parser.ops[1]));
+            struct data_t* data = rtable_get(table, strdup(parser.ops[1]));
             if(data==NULL){
                 printf("The entry wasn't found\n");
             }else{
