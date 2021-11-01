@@ -38,7 +38,7 @@ debug: all
 	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
 
 #obj client_lib
-client-lib.o: $(CLIENTLIBOBJS)
+client-lib.o: $(CLIENTLIBOBJS) 
 	ld -r $(addprefix $(OBJDIR)/,$(CLIENTLIBOBJS)) -o $(LIBDIR)/$@
 
 #table_client.exe
@@ -48,6 +48,12 @@ table_client: table_client.o client-lib.o
 #table_server.exe
 table_server: $(TABLEOBJ) $(SERVEROBJS)
 	$(CC) $(FLAGS) -I/usr/include  $(addprefix $(OBJDIR)/,$^) -o $(addprefix $(BINDIR)/,$@) -L/usr/lib -lprotobuf-c
+
+#generate protobuf files
+protobuf: sdmessage.proto
+	protoc --c_out=. sdmessage.proto
+	mv sdmessage.pb-c.c $(SRCDIR)
+	mv sdmessage.pb-c.h $(INCLUDEDIR)
 
 #clean directory
 clean:
