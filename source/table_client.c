@@ -75,7 +75,7 @@ int main(int argc, char** argv){
             }else{
                 printf("The value is: ");
                 for(int i=0; i<data->datasize; i++){
-                    printf("%x", *((char*)data->data+i));
+                    printf("%c", *((char*)data->data+i));
                 }
                 printf("\n");
             }
