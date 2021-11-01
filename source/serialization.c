@@ -54,9 +54,11 @@ int entry_to_buffer(struct entry_t *data, char **entry_buf) {
 
     int ksize = strlen(data->key) + 1;
 
-    int size = 2*sizeof(int) + ksize + data->value->datasize;
+    int size = 2 * sizeof(int) + ksize + data->value->datasize;
 
     char *const temp = malloc(size);
+
+    memset(temp, NULL, size);
     *temp = ksize;
     *(temp + sizeof(int)) = data->value->datasize;
     memcpy(temp + 2*sizeof(int), data->key, ksize);
