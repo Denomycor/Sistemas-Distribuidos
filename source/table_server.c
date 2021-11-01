@@ -8,7 +8,6 @@
 struct table_t* g_table;
 int g_sockfd;
     
-//TODO
 int main(int argc, char** argv) {
     
     int listening_socket;

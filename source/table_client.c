@@ -1,11 +1,8 @@
 
 #include "client_stub.h"
-#include "network_client.h"
-#include "client_stub-private.h"
 #include "priv-func.h"
 #include <stdio.h>
 #include <string.h>
-#include <serialization.h>
 
 #define RESP_SIZE 512
 #define RESP_SIZE_S "512"
@@ -35,14 +32,16 @@ int main(int argc, char** argv){
         memset(parser.ops, 0, 3*sizeof(char*));
         memset(parser.com, 0, RESP_SIZE);
         
-        printf("\n 0 - size\n 1 - del<key>\n 2 - get<key>\n 3 - put<key><data>\n 4 - getkeys\n 5 - table_print\n 6 - quit\n Please choose from 0 to 6 what you wish to do: ");
-        scanf(" %" RESP_SIZE_S "[0-9a-zA-Z _]", parser.com);
+        printf("\n-size\n-del<key>\n-get<key>\n-put<key><data>\n-getkeys\n-table_print\n-quit\n>>> ");
+        fgets(parser.com,RESP_SIZE, stdin);
+        parser.com[strlen(parser.com)-1] = '\0';
         printf("\n\n");
+        
 
         char *reader = parser.com, *last = parser.com;
 
 
-        while(*reader!='\0' && parser.c < 3 ){
+        while(*reader!='\0' && parser.c < 2 ){
             if(*reader == ' '){
                 *reader = '\0';
                 parser.ops[parser.c++] = last;
@@ -50,11 +49,6 @@ int main(int argc, char** argv){
             }
             reader++;
         }
-
-        if(parser.c>=3){
-            continue;
-        }
-
         parser.ops[parser.c++] = last;
 
         if(strcmp(parser.ops[0],"size")==0){

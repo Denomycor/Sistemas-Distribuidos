@@ -35,7 +35,7 @@ int write_all(int sockfd, char* data, int size) {
     write(sockfd, &s, sizeof(uint32_t));
 
     while (sent != size) {
-        int sentNow = write(sockfd, data, size);
+        int sentNow = write(sockfd, data, size); //may be using uninitialized mem
         if ( sentNow == -1 ) {
             return -1;
         }
