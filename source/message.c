@@ -1,3 +1,9 @@
+/* Grupo 16
+ * Afonso Esteves 54394
+ * Vicente Sousa 55386
+ * João Anjos 54476
+ */
+
 #include "message.h"
 #include <stdlib.h>
 #include <arpa/inet.h>
