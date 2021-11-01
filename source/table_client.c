@@ -35,7 +35,7 @@ int main(int argc, char** argv){
         memset(parser.ops, 0, 3*sizeof(char*));
         memset(parser.com, 0, RESP_SIZE);
         
-        printf("\n 0 - size\n 1 - del<key>\n 2 - get<key>\n 3 - put<key><data>\n 4 - getkeys\n 5 - table_print\n 6 - quit\n Please choose from 0 to 6 what you wish to do: ");
+        printf("\n-size\n-del<key>\n-get<key>\n-put<key><data>\n-getkeys\n-table_print\n-quit\n>>> ");
         scanf(" %" RESP_SIZE_S "[0-9a-zA-Z _]", parser.com);
         printf("\n\n");
 
