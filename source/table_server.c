@@ -1,3 +1,8 @@
+/* Grupo 16
+ * Afonso Esteves 54394
+ * Vicente Sousa 55386
+ * João Anjos 54476
+ */
 
 #include "table.h"
 #include "network_server.h"
@@ -8,7 +13,6 @@
 struct table_t* g_table;
 int g_sockfd;
     
-//TODO
 int main(int argc, char** argv) {
     
     int listening_socket;

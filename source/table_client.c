@@ -1,3 +1,8 @@
+/* Grupo 16
+ * Afonso Esteves 54394
+ * Vicente Sousa 55386
+ * João Anjos 54476
+ */
 
 #include "client_stub.h"
 #include "priv-func.h"
@@ -69,7 +74,7 @@ int main(int argc, char** argv){
             }else{
                 printf("The value is: ");
                 for(int i=0; i<data->datasize; i++){
-                    printf("%x", *((char*)data->data+i));
+                    printf("%c", *((char*)data->data+i));
                 }
                 printf("\n");
             }
