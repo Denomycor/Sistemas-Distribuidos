@@ -27,15 +27,18 @@ CC = gcc
 
 
 #Compile everything
-all: clean setup table_client table_server
+all: clean setup sdmessage.pb-c.o table_client table_server
 
 #Compile with debug flags and all warnings
 debug: FLAGS +=-g -Wall
 debug: all
 
 #obj files
-%.o: $(SRCDIR)/%.c
+%.o: $(SRCDIR)/%.c 
 	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
+
+%.pb-c.o: %.proto
+	protoc --c_out=. sdmessage.proto && mv sdmessage.pb-c.c $(SRCDIR) && mv sdmessage.pb-c.h $(INCLUDEDIR) && $(CC) $(FLAGS) -o $(OBJDIR)/$@ -c $(SRCDIR)/$(@:.o=.c) -I $(INCLUDEDIR)
 
 #obj client_lib
 client-lib.o: $(CLIENTLIBOBJS)
@@ -56,7 +59,7 @@ clean:
 	rm -rf $(LIBDIR)
 
 #setup directory
-setup:
+setup: 
 	mkdir -p $(OBJDIR)
 	mkdir -p $(BINDIR)
 	mkdir -p $(LIBDIR)
