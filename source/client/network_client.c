@@ -4,8 +4,8 @@
  * João Anjos 54476
  */
 
-#include "network_client.h"
-#include "message.h"
+#include "client/network_client.h"
+#include "message/message.h"
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>

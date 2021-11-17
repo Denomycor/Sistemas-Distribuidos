@@ -6,7 +6,8 @@
 #define PROTOBUF_C__NO_DEPRECATED
 #endif
 
-#include "sdmessage.pb-c.h"
+#include "message/sdmessage.pb-c.h"
+
 void   message_t__init
                      (MessageT         *message)
 {

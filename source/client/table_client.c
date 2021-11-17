@@ -4,8 +4,8 @@
  * João Anjos 54476
  */
 
-#include "client_stub.h"
-#include "priv-func.h"
+#include "client/client_stub.h"
+#include "helper/priv-func.h"
 #include <stdio.h>
 #include <string.h>
 

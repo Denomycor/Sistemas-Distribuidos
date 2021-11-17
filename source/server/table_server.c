@@ -5,9 +5,9 @@
  */
 
 #include "stats.h"
-#include "table.h"
-#include "network_server.h"
-#include "table_skel.h"
+#include "dataStructs/table/table.h"
+#include "server/network_server.h"
+#include "server/table_skel.h"
 #include <stdlib.h>
 #include <stdio.h>
 

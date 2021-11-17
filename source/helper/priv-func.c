@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "priv-func.h"
+#include "helper/priv-func.h"
 #include <stdlib.h>
 #include <string.h>
 

@@ -5,8 +5,8 @@
  */
 
 #include "stats.h"
-#include "network_server.h"
-#include "message.h"
+#include "server/network_server.h"
+#include "message/message.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/unistd.h>

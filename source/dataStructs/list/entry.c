@@ -4,8 +4,8 @@
  * João Anjos 54476
  */
 
-#include "entry.h"
-#include "data.h"
+#include "dataStructs/list/entry.h"
+#include "dataStructs/list/data.h"
 #include <stdlib.h>
 #include <string.h>
 

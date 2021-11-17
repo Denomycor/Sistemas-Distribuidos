@@ -4,8 +4,7 @@
  * João Anjos 54476
  */
 
-#include "list.h"
-#include "list-private.h"
+#include "dataStructs/list/list-private.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

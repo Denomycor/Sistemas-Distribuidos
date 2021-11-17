@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "serialization.h"
+#include "message/serialization.h"
 #include <stdlib.h>
 #include <string.h>
 

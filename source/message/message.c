@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "message.h"
+#include "message/message.h"
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <unistd.h>

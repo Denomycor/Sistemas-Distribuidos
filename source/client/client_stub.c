@@ -4,11 +4,11 @@
  * João Anjos 54476
  */
 
-#include "client_stub-private.h"
-#include "client_stub.h"
-#include "network_client.h"
-#include "serialization.h"
-#include "priv-func.h"
+#include "client/client_stub-private.h"
+#include "client/client_stub.h"
+#include "client/network_client.h"
+#include "message/serialization.h"
+#include "helper/priv-func.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -4,12 +4,12 @@
  * João Anjos 54476
  */
 
-#include "table.h"
-#include "table-private.h"
-#include "list-private.h"
-#include "data.h"
-#include "list.h"
-#include "entry.h"
+#include "dataStructs/table/table.h"
+#include "dataStructs/table/table-private.h"
+#include "dataStructs/list/list-private.h"
+#include "dataStructs/list/data.h"
+#include "dataStructs/list/list.h"
+#include "dataStructs/list/entry.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

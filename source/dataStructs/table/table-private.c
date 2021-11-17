@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "table-private.h"
+#include "dataStructs/table/table-private.h"
 
 /* Generates the hash code and applies the module operator to get the index 
  */

@@ -5,8 +5,8 @@
  */
 
 #include "stats.h"
-#include "table_skel.h"
-#include "serialization.h"
+#include "server/table_skel.h"
+#include "message/serialization.h"
 #include <string.h>
 #include <stdlib.h>
 

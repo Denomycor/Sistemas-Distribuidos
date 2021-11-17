@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "data.h"
+#include "dataStructs/list/data.h"
 #include <stdlib.h>
 #include <string.h>
 
