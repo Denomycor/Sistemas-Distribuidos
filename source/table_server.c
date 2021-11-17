@@ -9,8 +9,10 @@
 #include "table_skel.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "stats.h"
 
 struct table_t* g_table;
+stats_t stats; //Initialized at 0 because its a global variable
     
 int main(int argc, char** argv) {
     

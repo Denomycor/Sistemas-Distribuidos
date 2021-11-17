@@ -15,8 +15,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#include "stats.h"
 
 extern struct table_t* g_table;
+extern stats_t stats;
 
 /* Receives the socket descriptor and handles a response from the server
  * to the client

@@ -8,8 +8,10 @@
 #include "serialization.h"
 #include <string.h>
 #include <stdlib.h>
+#include "stats.h"
 
 extern struct table_t* g_table;
+extern stats_t stats;
 
 /* Inicia o skeleton da tabela.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -117,6 +119,12 @@ int invoke(MessageT *msg){
         msg->buffer.len = strlen(msg->buffer.data)+1;
 
 
+    }else if(msg->opcode == MESSAGE_T__OPCODE__OP_STATS){
+        msg->opcode++;
+        msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+        msg->buffer.data = malloc(sizeof(stats_t));
+        msg->buffer.len = sizeof(stats_t);
+        memcpy(msg->buffer.data, &stats, msg->buffer.len);
     }else{
         return -1;
     }
