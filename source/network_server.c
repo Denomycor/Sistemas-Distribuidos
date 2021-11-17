@@ -23,9 +23,9 @@ extern struct table_t* g_table;
  */
 void* dispatch_thread(void* args){
     
-    if(pthread_detach(gettip())!=0){
-        printf("Error detaching the thread %i", gettip());
-        return -1;
+    if(pthread_detach(pthread_self())!=0){
+        printf("Error detaching the thread %li", pthread_self());
+        return (void*)-1;
     }
 
     int sockfd = *(int*)args;
@@ -33,21 +33,21 @@ void* dispatch_thread(void* args){
 
     MessageT* msg;
     if((msg = network_receive(sockfd)) == NULL){
-        printf("Error processing response at thread: %i - couldn't receive message", gettid());
-        return -1;
+        printf("Error processing response at thread: %li - couldn't receive message", pthread_self());
+        return (void*)-1;
     }
 
     if (invoke(msg) < 0){
-        printf("Error processing response at thread: %i couldn't resolve asnwer", gettid());
-        return -1;
+        printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
+        return (void*)-1;
     }
 
     if(network_send(sockfd, msg) < 0){
-        printf("Error processing response at thread: %i couldn't send message", gettid());
-        return -1;
+        printf("Error processing response at thread: %li couldn't send message", pthread_self());
+        return (void*)-1;
     }
 
-    return 0;
+    return (void*)0;
 }
 
 
