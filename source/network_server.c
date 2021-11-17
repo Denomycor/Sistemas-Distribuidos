@@ -26,6 +26,7 @@ void* dispatch_thread(void* args){
     if(pthread_detach(pthread_self())!=0){
         printf("Error detaching the thread %li", pthread_self());
         return (void*)-1;
+        free(args);
     }
 
     int sockfd = *(int*)args;
