@@ -14,9 +14,34 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
 
 extern struct table_t* g_table;
-extern int g_sockfd;
+
+/* Receives the socket descriptor and handles a response from the server
+ * to the client, returns 0 if no errors occured
+ */
+void* dispatch_thread(void* args){
+    int sockfd = *(int*)args;
+    free(args);
+
+
+    MessageT* msg;
+    if((msg = network_receive(sockfd)) == NULL){
+        return -1;
+    }
+
+    if (invoke(msg) < 0){
+        return -1;
+    }
+
+    if(network_send(sockfd, msg) < 0){
+        return -1;
+    }
+
+    return -1;
+}
+
 
 /* Função para preparar uma socket de receção de pedidos de ligação
  * num determinado porto.
@@ -59,22 +84,25 @@ int network_server_init(short port){
  */
 int network_main_loop(int listening_socket){
     int sockfd;
+
     if (listen(listening_socket, 0) < 0){
         return -1;
     };
     if ((sockfd = accept(listening_socket,NULL,0)) < 0){ //the struct sockaddr wont be necessary
         return -1;
     }
-    MessageT* msg;
-    if((msg = network_receive(sockfd)) == NULL){
-        return -1;
+
+    int* args = malloc(sizeof(int));
+    if(args == NULL){
+        return -2;
     }
-    if (invoke(msg) < 0){
-        return -1;
+    *args = sockfd;
+
+    pthread_t id;
+    if(pthread_create(&id, NULL, dispatch_thread, args)!=0){
+        return -2;
     }
-    if(network_send(sockfd, msg) < 0){
-        return -1;
-    }
+
     return 0;
 }
 
@@ -104,6 +132,7 @@ MessageT* network_receive(int client_socket){
 int network_send(int client_socket, MessageT *msg){
     int len = message_t__get_packed_size(msg);
     void* buf = malloc(len);
+    
     
     if(buf == NULL) {
         close(client_socket);
