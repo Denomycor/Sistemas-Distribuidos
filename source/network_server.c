@@ -19,7 +19,7 @@
 extern struct table_t* g_table;
 
 /* Receives the socket descriptor and handles a response from the server
- * to the client, returns 0 if no errors occured
+ * to the client
  */
 void* dispatch_thread(void* args){
     
@@ -33,17 +33,17 @@ void* dispatch_thread(void* args){
 
     MessageT* msg;
     if((msg = network_receive(sockfd)) == NULL){
-        printf("Error processing response at thread: %i - couldnt receive message", gettid());
+        printf("Error processing response at thread: %i - couldn't receive message", gettid());
         return -1;
     }
 
     if (invoke(msg) < 0){
-        printf("Error processing response at thread: %i couldnt resolve asnwer", gettid());
+        printf("Error processing response at thread: %i couldn't resolve asnwer", gettid());
         return -1;
     }
 
     if(network_send(sockfd, msg) < 0){
-        printf("Error processing response at thread: %i couldnt send message", gettid());
+        printf("Error processing response at thread: %i couldn't send message", gettid());
         return -1;
     }
 
@@ -102,12 +102,14 @@ int network_main_loop(int listening_socket){
 
     int* args = malloc(sizeof(int));
     if(args == NULL){
+        printf("Couldn't initialize a new thread to answer a request");
         return -2;
     }
     *args = sockfd;
 
     pthread_t id;
     if(pthread_create(&id, NULL, dispatch_thread, args)!=0){
+        printf("Couldn't initialize a new thread to answer a request");
         return -2;
     }
 

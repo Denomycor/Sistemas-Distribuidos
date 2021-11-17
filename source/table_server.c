@@ -31,19 +31,14 @@ int main(int argc, char** argv) {
     listening_socket = network_server_init(port);
 
     while(1) {
-        int resp;
-        if((resp = network_main_loop(listening_socket))!=0){
-            if(resp ==-1){
-                printf("Something went wrong - closing server");
-                break;
-            }else{
-                printf("Last request not answered - error creating thread");
-            }
+        if(network_main_loop(listening_socket)==-1){
+            printf("Error - Couldn't prepare server to listen");
+            break;
         }
     }
 
     if(network_server_close(listening_socket)==-1){
-        perror("Couldn't close listening socket");
+        perror("Error - Couldn't close listening socket");
         exit(-1);
     }
     table_skel_destroy();
