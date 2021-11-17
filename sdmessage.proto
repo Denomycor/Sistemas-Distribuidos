@@ -24,7 +24,7 @@ message message_t
                 CT_TABLE  = 60;
                 CT_NONE   = 70;
         }
-        C_type c_type = 2;        
+        C_type c_type = 2;
         bytes buffer = 3;
 
 };
