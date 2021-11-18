@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "stats.h"
+#include "statistics/stats.h"
 #include "server/network_server.h"
 #include "message/message.h"
 #include <sys/socket.h>

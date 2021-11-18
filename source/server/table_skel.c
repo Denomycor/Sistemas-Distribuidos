@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "stats.h"
+#include "statistics/stats.h"
 #include "server/table_skel.h"
 #include "message/serialization.h"
 #include <string.h>
