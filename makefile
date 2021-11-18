@@ -34,11 +34,16 @@ debug: FLAGS +=-g -Wall
 debug: all
 
 #obj files
-%.o: $(SRCDIR)/%.c 
+%.o: $(SRCDIR)/*/%.c 
 	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
 
+#obj files depth 2
+%.o: $(SRCDIR)/*/*/%.c 
+	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
+
+#generate protobuf files
 %.pb-c.o: %.proto
-	protoc --c_out=. sdmessage.proto && mv sdmessage.pb-c.c $(SRCDIR) && mv sdmessage.pb-c.h $(INCLUDEDIR) && $(CC) $(FLAGS) -o $(OBJDIR)/$@ -c $(SRCDIR)/$(@:.o=.c) -I $(INCLUDEDIR)
+	protoc --c_out=. sdmessage.proto && mv sdmessage.pb-c.c $(SRCDIR)/message && mv sdmessage.pb-c.h $(INCLUDEDIR)/message && $(CC) $(FLAGS) -o $(OBJDIR)/$@ -c $(SRCDIR)/message/$(@:.o=.c) -I $(INCLUDEDIR)/message
 
 #obj client_lib
 client-lib.o: $(CLIENTLIBOBJS) 
@@ -51,12 +56,6 @@ table_client: table_client.o client-lib.o
 #table_server.exe
 table_server: $(TABLEOBJ) $(SERVEROBJS)
 	$(CC) $(FLAGS) -I/usr/include  $(addprefix $(OBJDIR)/,$^) -o $(addprefix $(BINDIR)/,$@) -L/usr/lib -lprotobuf-c
-
-#generate protobuf files
-protobuf: sdmessage.proto
-	protoc --c_out=. sdmessage.proto
-	mv sdmessage.pb-c.c $(SRCDIR)
-	mv sdmessage.pb-c.h $(INCLUDEDIR)
 
 #clean directory
 clean:
