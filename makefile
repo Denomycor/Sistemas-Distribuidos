@@ -68,7 +68,3 @@ setup:
 	mkdir -p $(OBJDIR)
 	mkdir -p $(BINDIR)
 	mkdir -p $(LIBDIR)
-
-
-tmp:
-	echo $(OBJ)
