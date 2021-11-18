@@ -120,11 +120,18 @@ int invoke(MessageT *msg){
 
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_STATS){
-        msg->opcode++;
-        msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
         msg->buffer.data = malloc(sizeof(stats_t));
-        msg->buffer.len = sizeof(stats_t);
-        memcpy(msg->buffer.data, &stats, msg->buffer.len);
+        if(msg->buffer.data == NULL){
+            msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
+            msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+            msg->buffer.len = 0;
+        }else{
+            msg->buffer.len = sizeof(stats_t);
+            memcpy(msg->buffer.data, &stats, msg->buffer.len);
+            msg->opcode++;
+            msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+        }
+
     }else{
         return -1;
     }
