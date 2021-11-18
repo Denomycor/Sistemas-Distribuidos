@@ -55,8 +55,11 @@ void* dispatch_thread(void* args){
         return (void*)-1;
     }
 
-    stop_timing(clock);
-    update_stats(&stats, op_code, clock);
+    if(!(op_code > 60 || op_code < 10)){
+        stop_timing(clock);
+        update_stats(&stats, op_code, clock);
+    }
+    
 
     return (void*)0;
 }

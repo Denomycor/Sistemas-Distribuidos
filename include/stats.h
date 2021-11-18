@@ -6,7 +6,7 @@
 typedef struct{
     clock_t avg;
     size_t total;
-    size_t counter[7];
+    size_t counter[6];
 }stats_t;
 
 //Start timer on t
