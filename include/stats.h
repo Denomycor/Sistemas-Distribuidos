@@ -1,5 +1,5 @@
-#ifndef STATS_H
-#define STATS_H
+#ifndef _STATS_H
+#define _STATS_H
 
 #include <time.h>
 

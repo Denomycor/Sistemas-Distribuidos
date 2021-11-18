@@ -26,7 +26,7 @@ extern stats_t stats;
 void* dispatch_thread(void* args){
     
     clock_t clock;
-    start_timing(clock);
+    start_timing(&clock);
 
     if(pthread_detach(pthread_self())!=0){
         printf("Error detaching the thread %li", pthread_self());
@@ -56,7 +56,7 @@ void* dispatch_thread(void* args){
     }
 
     if(!(op_code > 60 || op_code < 10)){
-        stop_timing(clock);
+        stop_timing(&clock);
         update_stats(&stats, op_code, clock);
     }
     
