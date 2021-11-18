@@ -7,7 +7,7 @@
 #ifndef _TABLE_PRIVATE_H
 #define _TABLE_PRIVATE_H
 
-#include "list.h"
+#include "dataStructs/list/list.h"
 
 /* Struct that represents a hash table, has an array of pointers to each list
  * and the size of the array

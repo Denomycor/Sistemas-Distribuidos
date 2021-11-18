@@ -10,10 +10,11 @@
 #include "dataStructs/list/data.h"
 #include "dataStructs/list/list.h"
 #include "dataStructs/list/entry.h"
+#include "helper/priv-func.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "priv-func.h"
+
 
 /* Função para criar/inicializar uma nova tabela hash, com n
  * linhas (n = módulo da função hash)

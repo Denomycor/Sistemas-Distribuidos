@@ -7,8 +7,8 @@
 #ifndef _TABLE_SKEL_H
 #define _TABLE_SKEL_H
 
-#include "sdmessage.pb-c.h"
-#include "table.h"
+#include "message/sdmessage.pb-c.h"
+#include "dataStructs/table/table.h"
 
 #define MAX_BUF_SIZE 2048
 

@@ -7,7 +7,7 @@
 #ifndef _LIST_PRIVATE_H
 #define _LIST_PRIVATE_H
 
-#include "list.h"
+#include "dataStructs/list/list.h"
 
 /* Estrutura que define o nó de uma lista. 
 */

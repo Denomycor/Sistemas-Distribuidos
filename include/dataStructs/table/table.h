@@ -7,7 +7,7 @@
 #ifndef _TABLE_H
 #define _TABLE_H /* Módulo table */
 
-#include "data.h"
+#include "dataStructs/list/data.h"
 
 struct table_t; /* A definir pelo grupo em table-private.h */
 

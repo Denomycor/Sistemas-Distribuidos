@@ -7,8 +7,8 @@
 #ifndef _LIST_H
 #define _LIST_H /* Módulo list */
 
-#include "data.h"
-#include "entry.h"
+#include "dataStructs/list/data.h"
+#include "dataStructs/list/entry.h"
 
 struct list_t; /* a definir pelo grupo em list-private.h */
 

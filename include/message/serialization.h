@@ -7,8 +7,8 @@
 #ifndef _SERIALIZATION_H
 #define _SERIALIZATION_H
 
-#include "data.h"
-#include "entry.h"
+#include "dataStructs/list/data.h"
+#include "dataStructs/list/entry.h"
 
 /* Serializa uma estrutura data num buffer que será alocado
  * dentro da função. Além disso, retorna o tamanho do buffer

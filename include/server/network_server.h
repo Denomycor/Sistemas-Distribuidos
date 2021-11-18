@@ -7,7 +7,7 @@
 #ifndef _NETWORK_SERVER_H
 #define _NETWORK_SERVER_H
 
-#include "table_skel.h"
+#include "server/table_skel.h"
 
 /* Função para preparar uma socket de receção de pedidos de ligação
  * num determinado porto.
