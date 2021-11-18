@@ -1,4 +1,4 @@
-#include "stats.h"
+#include "statistics/stats.h"
 
 //Start timer on t
 void start_timing(clock_t* t){
