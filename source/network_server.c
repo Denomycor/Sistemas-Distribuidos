@@ -4,6 +4,7 @@
  * João Anjos 54476
  */
 
+#include "stats.h"
 #include "network_server.h"
 #include "message.h"
 #include <sys/socket.h>
@@ -17,12 +18,16 @@
 #include <pthread.h>
 
 extern struct table_t* g_table;
+extern stats_t stats;
 
 /* Receives the socket descriptor and handles a response from the server
  * to the client
  */
 void* dispatch_thread(void* args){
     
+    clock_t clock;
+    start_timing(clock);
+
     if(pthread_detach(pthread_self())!=0){
         printf("Error detaching the thread %li", pthread_self());
         return (void*)-1;
@@ -38,6 +43,8 @@ void* dispatch_thread(void* args){
         return (void*)-1;
     }
 
+    int op_code = msg->opcode;
+
     if (invoke(msg) < 0){
         printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
         return (void*)-1;
@@ -47,6 +54,12 @@ void* dispatch_thread(void* args){
         printf("Error processing response at thread: %li couldn't send message", pthread_self());
         return (void*)-1;
     }
+
+    if(!(op_code > 60 || op_code < 10)){
+        stop_timing(clock);
+        update_stats(&stats, op_code, clock);
+    }
+    
 
     return (void*)0;
 }

@@ -4,12 +4,14 @@
  * João Anjos 54476
  */
 
+#include "stats.h"
 #include "table_skel.h"
 #include "serialization.h"
 #include <string.h>
 #include <stdlib.h>
 
 extern struct table_t* g_table;
+extern stats_t stats;
 
 /* Inicia o skeleton da tabela.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -116,6 +118,19 @@ int invoke(MessageT *msg){
         msg->buffer.data = table_to_string(g_table);
         msg->buffer.len = strlen(msg->buffer.data)+1;
 
+
+    }else if(msg->opcode == MESSAGE_T__OPCODE__OP_STATS){
+        msg->buffer.data = malloc(sizeof(stats_t));
+        if(msg->buffer.data == NULL){
+            msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
+            msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+            msg->buffer.len = 0;
+        }else{
+            msg->buffer.len = sizeof(stats_t);
+            memcpy(msg->buffer.data, &stats, msg->buffer.len);
+            msg->opcode++;
+            msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+        }
 
     }else{
         return -1;
