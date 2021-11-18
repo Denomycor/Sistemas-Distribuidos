@@ -4,11 +4,11 @@
  * João Anjos 54476
  */
 
+#include "stats.h"
 #include "table_skel.h"
 #include "serialization.h"
 #include <string.h>
 #include <stdlib.h>
-#include "stats.h"
 
 extern struct table_t* g_table;
 extern stats_t stats;

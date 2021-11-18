@@ -4,6 +4,7 @@
  * João Anjos 54476
  */
 
+#include "stats.h"
 #include "network_server.h"
 #include "message.h"
 #include <sys/socket.h>
@@ -15,7 +16,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
-#include "stats.h"
 
 extern struct table_t* g_table;
 extern stats_t stats;
