@@ -10,6 +10,7 @@
 #include "server/access-man.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 extern struct table_t* g_table;
 extern stats_t stats;
@@ -69,7 +70,7 @@ int invoke(MessageT *msg){
             msg->opcode++;
             msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
             free(msg->buffer.data);
-            msg->buffer.len = data_to_buffer(temp, &msg->buffer.data);
+            msg->buffer.len = data_to_buffer(temp, (char**)&msg->buffer.data);
         }
         data_destroy(temp);
 
