@@ -66,6 +66,7 @@ void* dispatch_thread(void* args){
         }
         if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
             printf("Error processing response at thread: %li couldn't lock write_exclusive", pthread_self());
+            pthread_mutex_unlock(&stats_sync.stats_write_mutex);
             return (void*)-1;
         }
 
@@ -73,6 +74,7 @@ void* dispatch_thread(void* args){
 
         if(write_exclusive_unlock(&stats_sync.stats_exc_mutex)!=0){
             printf("Error processing response at thread: %li couldn't unlock write_exclusive", pthread_self());
+            pthread_mutex_unlock(&stats_sync.stats_write_mutex);
             return (void*)-1;
         }
         if(pthread_mutex_unlock(&stats_sync.stats_write_mutex)!=0){
