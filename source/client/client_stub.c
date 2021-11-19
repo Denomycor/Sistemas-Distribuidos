@@ -97,7 +97,7 @@ struct data_t *rtable_get(struct rtable_t *rtable, char *key){
         return NULL;
     }
 
-    struct data_t*const data = buffer_to_data(resp->buffer.data, resp->buffer.len);
+    struct data_t* const data = buffer_to_data(resp->buffer.data, resp->buffer.len);
 
     message_t__free_unpacked(resp, NULL);
 
@@ -151,6 +151,28 @@ int rtable_size(struct rtable_t *rtable){
     return result;
 }
 
+/* Obtém as estatísticas do servidor */
+struct statistics *rtable_stats(struct rtable_t *rtable){
+    MessageT msg;
+    message_t__init(&msg);  
+    msg.opcode = MESSAGE_T__OPCODE__OP_STATS;
+    msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
+    msg.buffer.len = 0;
+    msg.buffer.data = NULL;
+
+    MessageT* resp = network_send_receive(rtable, &msg);
+
+    if(resp == NULL){
+        message_t__free_unpacked(resp, NULL);
+        return -1;
+    }
+
+    struct statistics* const stats = resp->buffer.data;
+
+    message_t__free_unpacked(resp, NULL);
+    return stats;
+}
+
 /* Devolve um array de char* com a cópia de todas as keys da tabela,
  * colocando um último elemento a NULL.
  */
@@ -199,10 +221,6 @@ void rtable_free_keys(char **keys){
     free(keys);
 }
 
-/* Obtém as estatísticas do servidor */
-struct statistics *rtable_stats(struct rtable_t *rtable){
-    
-}
 
 /* Função que imprime o conteúdo da tabela remota para o terminal.
  */
@@ -220,4 +238,6 @@ void rtable_print(struct rtable_t *rtable) {
 
     message_t__free_unpacked(rsp,NULL);
 }
+
+
 
