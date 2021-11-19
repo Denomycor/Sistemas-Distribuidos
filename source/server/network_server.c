@@ -111,12 +111,17 @@ int network_server_init(short port){
         return -1;
     };
 
+
     if(rw_exc_init(&stats_sync.stats_exc_mutex)!=0){
         return -1;
     }
     if(pthread_mutex_init(&stats_sync.stats_write_mutex, NULL)!=0){
         return -1;
     }
+
+    if (listen(sockfd, 0) < 0){
+        return -1;
+    };
 
     return sockfd;
 }
@@ -131,9 +136,6 @@ int network_server_init(short port){
 int network_main_loop(int listening_socket){
     int sockfd;
 
-    if (listen(listening_socket, 0) < 0){
-        return -1;
-    };
     if ((sockfd = accept(listening_socket,NULL,0)) < 0){ //the struct sockaddr wont be necessary
         return -1;
     }
