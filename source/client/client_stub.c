@@ -65,7 +65,7 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
     message_t__init(&msg);
     msg.opcode = MESSAGE_T__OPCODE__OP_PUT;
     msg.c_type = MESSAGE_T__C_TYPE__CT_ENTRY;
-    msg.buffer.len = entry_to_buffer(entry, &msg.buffer.data);
+    msg.buffer.len = entry_to_buffer(entry, (char**)&msg.buffer.data);
 
     MessageT* resp = network_send_receive(rtable, &msg);
 
@@ -170,7 +170,7 @@ char **rtable_get_keys(struct rtable_t *rtable){
     }
 
     int nkeys = 0;
-    for(char* i = resp->buffer.data; i < resp->buffer.data+resp->buffer.len; i++){
+    for(char* i = resp->buffer.data; i < (char*)resp->buffer.data+resp->buffer.len; i++){
         if(*i == '\0'){
             nkeys++;
         }

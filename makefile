@@ -17,7 +17,7 @@ OBJFILES := $(SRCFILES:./source/%.c=%.o)
 TABLEOBJ = data.o entry.o list-private.o list.o serialization.o table.o table-private.o
 
 #Objs needed to compile table_server
-SERVEROBJS = table_skel.o network_server.o priv-func.o sdmessage.pb-c.o table_server.o message.o stats.o
+SERVEROBJS = table_skel.o network_server.o priv-func.o sdmessage.pb-c.o table_server.o message.o stats.o access-man.o
 
 #Objs needed to compiler client-lib.o
 CLIENTLIBOBJS = client_stub.o network_client.o priv-func.o data.o entry.o sdmessage.pb-c.o serialization.o message.o stats.o

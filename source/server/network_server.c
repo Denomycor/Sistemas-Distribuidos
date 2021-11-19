@@ -7,6 +7,7 @@
 #include "statistics/stats.h"
 #include "server/network_server.h"
 #include "message/message.h"
+#include "server/access-man.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/unistd.h>
@@ -19,6 +20,7 @@
 
 extern struct table_t* g_table;
 extern stats_t stats;
+stats_sync_data stats_sync;
 
 /* Receives the socket descriptor and handles a response from the server
  * to the client
@@ -57,7 +59,22 @@ void* dispatch_thread(void* args){
 
     if(!(op_code > 60 || op_code < 10)){
         stop_timing(&clock);
+
+        if(pthread_mutex_lock(&stats_sync.stats_write_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't lock read_mutex", pthread_self());
+            return (void*)-1;
+        }
+        if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't lock write_exclusive", pthread_self());
+            pthread_mutex_unlock(&stats_sync.stats_write_mutex);
+            return (void*)-1;
+        }
+
         update_stats(&stats, op_code, clock);
+        
+        write_exclusive_unlock(&stats_sync.stats_exc_mutex);
+        pthread_mutex_unlock(&stats_sync.stats_write_mutex);
+        
     }
     
 
@@ -93,6 +110,14 @@ int network_server_init(short port){
         close(sockfd);
         return -1;
     };
+
+
+    if(rw_exc_init(&stats_sync.stats_exc_mutex)!=0){
+        return -1;
+    }
+    if(pthread_mutex_init(&stats_sync.stats_write_mutex, NULL)!=0){
+        return -1;
+    }
 
     if (listen(sockfd, 0) < 0){
         return -1;
@@ -179,5 +204,13 @@ int network_send(int client_socket, MessageT *msg){
  * network_server_init().
  */
 int network_server_close(int listening_socket){
+
+    if(rw_exc_destroy(&stats_sync.stats_exc_mutex)!=0){
+        return -1;
+    }
+    if(pthread_mutex_destroy(&stats_sync.stats_write_mutex)!=0){
+        return -1;
+    }
+
     return close(listening_socket);
 }
