@@ -59,7 +59,26 @@ void* dispatch_thread(void* args){
 
     if(!(op_code > 60 || op_code < 10)){
         stop_timing(&clock);
+
+        if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't lock write_exclusive", pthread_self());
+            return (void*)-1;
+        }
+        if(pthread_mutex_lock(&stats_sync.stats_write_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't lock read_mutex", pthread_self());
+            return (void*)-1;
+        }
+
         update_stats(&stats, op_code, clock);
+
+        if(write_exclusive_unlock(&stats_sync.stats_exc_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't unlock write_exclusive", pthread_self());
+            return (void*)-1;
+        }
+        if(pthread_mutex_unlock(&stats_sync.stats_write_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't unlock read_mutex", pthread_self());
+            return (void*)-1;
+        }
     }
     
 
@@ -95,6 +114,10 @@ int network_server_init(short port){
         close(sockfd);
         return -1;
     };
+
+    if(rw_exc_init(&stats_sync.stats_exc_mutex)!=0){
+        return -1;
+    }
 
     return sockfd;
 }
