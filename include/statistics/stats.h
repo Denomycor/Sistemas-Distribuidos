@@ -3,11 +3,7 @@
 
 #include <time.h>
 
-typedef struct{
-    clock_t avg;
-    size_t total;
-    size_t counter[6];
-}statistics;
+struct statistics;
 
 //Start timer on t
 void start_timing(clock_t* t);
@@ -16,9 +12,9 @@ void start_timing(clock_t* t);
 void stop_timing(clock_t* t);
 
 //Update the stats
-void update_stats(statistics* stats, int op_code, clock_t time);
+void update_stats(struct statistics* stats, int op_code, clock_t time);
 
 //Return the avg time in seconds
-double get_avg_time(const statistics* stats);
+double get_avg_time(const struct statistics* stats);
 
 #endif

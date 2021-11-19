@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 struct table_t* g_table;
-statistics stats; //Initialized at 0 because its a global variable
+struct statistics stats; //Initialized at 0 because its a global variable
     
 int main(int argc, char** argv) {
     

@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "statistics/stats.h"
+#include "statistics/stats-private.h"
 #include "server/table_skel.h"
 #include "message/serialization.h"
 #include "server/access-man.h"
@@ -14,7 +14,10 @@
 
 extern struct table_t* g_table;
 extern struct statistics stats;
+<<<<<<< HEAD
 extern stats_sync_data stats_sync;
+=======
+>>>>>>> Updated statistics structure
 
 /* Inicia o skeleton da tabela.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -123,12 +126,13 @@ int invoke(MessageT *msg){
 
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_STATS){
-        msg->buffer.data = malloc(sizeof(statistics));
+        msg->buffer.data = malloc(sizeof(struct statistics));
         if(msg->buffer.data == NULL){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
             msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
             msg->buffer.len = 0;
         }else{
+<<<<<<< HEAD
 <<<<<<< HEAD
             msg->buffer.len = sizeof(stats_t);
 
@@ -143,6 +147,9 @@ int invoke(MessageT *msg){
 =======
             msg->buffer.len = sizeof(statistics);
 >>>>>>> #8 Refactor estrutura
+=======
+            msg->buffer.len = sizeof(struct statistics);
+>>>>>>> Updated statistics structure
             memcpy(msg->buffer.data, &stats, msg->buffer.len);
 
             write_exclusive_unlock(&stats_sync.stats_exc_mutex;
