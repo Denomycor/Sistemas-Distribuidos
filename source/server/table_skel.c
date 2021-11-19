@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 extern struct table_t* g_table;
-extern stats_t stats;
+extern struct statistics stats;
 extern stats_sync_data stats_sync;
 
 /* Inicia o skeleton da tabela.
@@ -123,12 +123,13 @@ int invoke(MessageT *msg){
 
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_STATS){
-        msg->buffer.data = malloc(sizeof(stats_t));
+        msg->buffer.data = malloc(sizeof(statistics));
         if(msg->buffer.data == NULL){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
             msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
             msg->buffer.len = 0;
         }else{
+<<<<<<< HEAD
             msg->buffer.len = sizeof(stats_t);
 
             if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
@@ -139,6 +140,9 @@ int invoke(MessageT *msg){
                 return 0;
             }
 
+=======
+            msg->buffer.len = sizeof(statistics);
+>>>>>>> #8 Refactor estrutura
             memcpy(msg->buffer.data, &stats, msg->buffer.len);
 
             write_exclusive_unlock(&stats_sync.stats_exc_mutex;

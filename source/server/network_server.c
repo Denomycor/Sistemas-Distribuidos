@@ -19,7 +19,7 @@
 #include <pthread.h>
 
 extern struct table_t* g_table;
-extern stats_t stats;
+extern struct statistics stats;
 stats_sync_data stats_sync;
 
 /* Receives the socket descriptor and handles a response from the server
