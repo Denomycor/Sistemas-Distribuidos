@@ -137,23 +137,23 @@ int network_server_init(short port){
  */
 int network_main_loop(int listening_socket){
     while(1) {
-
+    
         int sockfd;
-        if ((sockfd = accept(listening_socket,NULL,0)) < 0){ //the struct sockaddr wont be necessary
+        if ((sockfd = accept(listening_socket,NULL,0)) < 0) {
             return -1;
         }
 
         int* args;
         if((args = malloc(sizeof(int))) == NULL){
             printf("Couldn't initialize a new thread to answer a request");
-            return -2;
+            continue;
         }
         *args = sockfd;
 
         pthread_t id;
         if(pthread_create(&id, NULL, dispatch_thread, args) != 0){
             printf("Couldn't initialize a new thread to answer a request");
-            return -2;
+            continue;
         }
     }
 }
