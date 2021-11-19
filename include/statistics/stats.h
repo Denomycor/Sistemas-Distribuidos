@@ -2,6 +2,7 @@
 #define _STATS_H
 
 #include <time.h>
+#include "statistics/stats-private.h"
 
 struct statistics;
 
