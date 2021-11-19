@@ -71,12 +71,12 @@ void* dispatch_thread(void* args){
 
         update_stats(&stats, op_code, clock);
 
-        if(write_exclusive_unlock(&stats_sync.stats_exc_mutex)!=0){
-            printf("Error processing response at thread: %li couldn't unlock write_exclusive", pthread_self());
-            return (void*)-1;
-        }
         if(pthread_mutex_unlock(&stats_sync.stats_write_mutex)!=0){
             printf("Error processing response at thread: %li couldn't unlock read_mutex", pthread_self());
+            return (void*)-1;
+        }
+        if(write_exclusive_unlock(&stats_sync.stats_exc_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't unlock write_exclusive", pthread_self());
             return (void*)-1;
         }
     }
@@ -116,6 +116,9 @@ int network_server_init(short port){
     };
 
     if(rw_exc_init(&stats_sync.stats_exc_mutex)!=0){
+        return -1;
+    }
+    if(pthread_mutex_init(&stats_sync.stats_write_mutex, NULL)!=0){
         return -1;
     }
 
@@ -203,5 +206,13 @@ int network_send(int client_socket, MessageT *msg){
  * network_server_init().
  */
 int network_server_close(int listening_socket){
+
+    if(rw_exc_destroy(&stats_sync.stats_exc_mutex)!=0){
+        return -1;
+    }
+    if(pthread_mutex_destroy(&stats_sync.stats_write_mutex)!=0){
+        return -1;
+    }
+
     return close(listening_socket);
 }
