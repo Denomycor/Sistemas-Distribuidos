@@ -11,7 +11,7 @@ int read_exclusive_lock(rw_exc_t* m){
     int res;
     do{
         res = read_exc(m);
-    }while(res==-1);
+    }while(res!=0);
     return res;
 }
 
@@ -19,7 +19,7 @@ int write_exclusive_lock(rw_exc_t* m){
     int res;
     do{
         res = write_exc(m);
-    }while(res==-1);
+    }while(res!=0);
     return res;
 }
 
