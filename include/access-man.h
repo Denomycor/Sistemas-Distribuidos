@@ -44,4 +44,11 @@ int write_exclusive_unlock(rw_exc_t* m);
  */
 int rw_exc_destroy(rw_exc_t* m);
 
+
+
+typedef struct{
+    rw_exc_t stats_exc_mutex;
+    pthread_mutex_t stats_write_mutex;
+}stats_sync_data;
+
 #endif

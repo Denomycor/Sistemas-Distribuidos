@@ -7,6 +7,7 @@
 #include "statistics/stats.h"
 #include "server/network_server.h"
 #include "message/message.h"
+#include "access-man.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/unistd.h>
@@ -19,6 +20,7 @@
 
 extern struct table_t* g_table;
 extern stats_t stats;
+stats_sync_data stats_sync;
 
 /* Receives the socket descriptor and handles a response from the server
  * to the client
