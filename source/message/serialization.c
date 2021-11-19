@@ -22,6 +22,7 @@ int data_to_buffer(struct data_t *data, char **data_buf) {
     if (temp == NULL) {
         return -1;
     }
+    memset(temp,0,size);
     *temp = data->datasize;
     memcpy(temp+sizeof(int), data->data, data->datasize);
     *data_buf = temp;
