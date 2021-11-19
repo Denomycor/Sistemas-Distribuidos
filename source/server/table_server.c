@@ -32,11 +32,8 @@ int main(int argc, char** argv) {
 
     listening_socket = network_server_init(port);
 
-    while(1) {
-        if(network_main_loop(listening_socket)==-1){
-            printf("Error - Couldn't prepare server to listen");
-            break;
-        }
+    if(network_main_loop(listening_socket) < 0 ){
+        printf("Error - Couldn't prepare server to listen");
     }
 
     if(network_server_close(listening_socket)==-1){
