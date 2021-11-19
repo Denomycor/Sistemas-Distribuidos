@@ -7,7 +7,7 @@
 #include "statistics/stats.h"
 #include "server/network_server.h"
 #include "message/message.h"
-#include "access-man.h"
+#include "server/access-man.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/unistd.h>
