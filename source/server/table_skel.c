@@ -14,10 +14,7 @@
 
 extern struct table_t* g_table;
 extern struct statistics stats;
-<<<<<<< HEAD
 extern stats_sync_data stats_sync;
-=======
->>>>>>> Updated statistics structure
 
 /* Inicia o skeleton da tabela.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -132,10 +129,7 @@ int invoke(MessageT *msg){
             msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
             msg->buffer.len = 0;
         }else{
-<<<<<<< HEAD
-<<<<<<< HEAD
-            msg->buffer.len = sizeof(stats_t);
-
+            msg->buffer.len = sizeof(struct statistics);
             if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
                 printf("Error processing response at thread: %li couldn't lock write_exclusive at invoke", pthread_self());
                 msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
@@ -143,16 +137,8 @@ int invoke(MessageT *msg){
                 msg->buffer.len = 0;
                 return 0;
             }
-
-=======
-            msg->buffer.len = sizeof(statistics);
->>>>>>> #8 Refactor estrutura
-=======
-            msg->buffer.len = sizeof(struct statistics);
->>>>>>> Updated statistics structure
             memcpy(msg->buffer.data, &stats, msg->buffer.len);
-
-            write_exclusive_unlock(&stats_sync.stats_exc_mutex;
+            write_exclusive_unlock(&stats_sync.stats_exc_mutex);
 
             msg->opcode++;
             msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
