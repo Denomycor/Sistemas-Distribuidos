@@ -4,7 +4,7 @@
  * João Anjos 54476
  */
 
-#include "statistics/stats-private.h"
+#include "statistics/stats.h"
 #include "server/network_server.h"
 #include "message/message.h"
 #include "server/access-man.h"
