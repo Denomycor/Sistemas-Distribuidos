@@ -152,7 +152,7 @@ int rtable_size(struct rtable_t *rtable){
 }
 
 /* Obtém as estatísticas do servidor */
-struct statistics *rtable_stats(struct rtable_t *rtable){
+struct statistics* rtable_stats(struct rtable_t *rtable){
     MessageT msg;
     message_t__init(&msg);  
     msg.opcode = MESSAGE_T__OPCODE__OP_STATS;
