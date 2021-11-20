@@ -4,10 +4,12 @@
  * João Anjos 54476
  */
 
+#include "statistics/stats-private.h"
 #include "client/client_stub.h"
 #include "helper/priv-func.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define RESP_SIZE 512
 #define RESP_SIZE_S "512"
@@ -37,7 +39,7 @@ int main(int argc, char** argv){
         memset(parser.ops, 0, 3*sizeof(char*));
         memset(parser.com, 0, RESP_SIZE);
         
-        printf("\n-size\n-del<key>\n-get<key>\n-put<key><data>\n-getkeys\n-table_print\n-quit\n>>> ");
+        printf("\n-size\n-del<key>\n-get<key>\n-put<key><data>\n-getkeys\n-table_print\n-quit\n-stats\n>>> ");
         fgets(parser.com,RESP_SIZE, stdin);
         parser.com[strlen(parser.com)-1] = '\0';
         printf("\n\n");
@@ -99,6 +101,16 @@ int main(int argc, char** argv){
 
         }else if(strcmp(parser.ops[0], "table_print")==0){
             rtable_print(table);
+
+        }else if(strcmp(parser.ops[0], "stats")==0){
+            struct statistics*const stats = rtable_stats(table);
+            if(stats != NULL){
+                printf("Average processing time in seconds: %f\n", get_avg_time(stats));
+                print_counter(stats);
+                free(stats);
+            }else{
+                printf("Something went wrong\n");
+            }
 
         }else if(strcmp(parser.ops[0], "quit") != 0){
             printf("%s", "Please insert a valid command\n");

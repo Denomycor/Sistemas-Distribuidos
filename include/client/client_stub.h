@@ -9,6 +9,7 @@
 
 #include "dataStructs/list/data.h"
 #include "dataStructs/list/entry.h"
+#include "statistics/stats-private.h"
 
 /* Remote table, que deve conter as informações necessárias para estabelecer a comunicação com o servidor. A definir pelo grupo em client_stub-private.h
  */
@@ -59,6 +60,9 @@ void rtable_free_keys(char **keys);
 /* Função que imprime o conteúdo da tabela remota para o terminal.
  */
 void rtable_print(struct rtable_t *rtable);
+
+/* Obtém as estatísticas do servidor */
+struct statistics *rtable_stats(struct rtable_t *rtable); 
 
 
 #endif

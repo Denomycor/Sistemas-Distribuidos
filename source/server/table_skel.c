@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 extern struct table_t* g_table;
-extern stats_t stats;
+extern struct statistics stats;
 extern stats_sync_data stats_sync;
 
 /* Inicia o skeleton da tabela.
@@ -123,14 +123,13 @@ int invoke(MessageT *msg){
 
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_STATS){
-        msg->buffer.data = malloc(sizeof(stats_t));
+        msg->buffer.data = malloc(sizeof(struct statistics));
         if(msg->buffer.data == NULL){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
             msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
             msg->buffer.len = 0;
         }else{
-            msg->buffer.len = sizeof(stats_t);
-
+            msg->buffer.len = sizeof(struct statistics);
             if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
                 printf("Error processing response at thread: %li couldn't lock write_exclusive at invoke", pthread_self());
                 msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
@@ -138,10 +137,8 @@ int invoke(MessageT *msg){
                 msg->buffer.len = 0;
                 return 0;
             }
-
             memcpy(msg->buffer.data, &stats, msg->buffer.len);
-
-            write_exclusive_unlock(&stats_sync.stats_exc_mutex;
+            write_exclusive_unlock(&stats_sync.stats_exc_mutex);
 
             msg->opcode++;
             msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
