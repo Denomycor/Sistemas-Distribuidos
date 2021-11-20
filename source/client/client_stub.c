@@ -169,6 +169,7 @@ struct statistics* rtable_stats(struct rtable_t *rtable){
 
     struct statistics* const stats = resp->buffer.data;
     resp->buffer.data = NULL;
+    resp->buffer.len = 0;
 
     message_t__free_unpacked(resp, NULL);
     return stats;
