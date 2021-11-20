@@ -9,6 +9,7 @@
 #include "helper/priv-func.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define RESP_SIZE 512
 #define RESP_SIZE_S "512"
@@ -103,10 +104,14 @@ int main(int argc, char** argv){
 
         }else if(strcmp(parser.ops[0], "stats")==0){
             struct statistics*const stats = rtable_stats(table);
-            printf("Average processing time in seconds: %f\n", get_avg_time(stats));
-            print_counter(stats);
-            free(stats);
-            
+            if(stats != NULL){
+                printf("Average processing time in seconds: %f\n", get_avg_time(stats));
+                print_counter(stats);
+                free(stats);
+            }else{
+                printf("Something went wrong\n");
+            }
+
         }else if(strcmp(parser.ops[0], "quit") != 0){
             printf("%s", "Please insert a valid command\n");
         }

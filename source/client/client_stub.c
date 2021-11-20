@@ -164,10 +164,10 @@ struct statistics* rtable_stats(struct rtable_t *rtable){
 
     if(resp == NULL){
         message_t__free_unpacked(resp, NULL);
-        return -1;
+        return NULL;
     }
 
-    struct statistics* const stats = resp->buffer.data;
+    struct statistics* const stats = (struct statistics*)resp->buffer.data;
     resp->buffer.data = NULL;
     resp->buffer.len = 0;
 
