@@ -16,10 +16,18 @@ int read_all(int sockfd, uint8_t** data) {
 
     int* tmp = malloc(UNSIGNED_SIZE);
 
+    if(tmp == NULL){
+        return -1;
+    }
+
     read(sockfd, tmp, UNSIGNED_SIZE);
 
     size = ntohl(*tmp);
     *data = malloc(size);
+
+    if(data == NULL){
+        return -1;
+    }
 
     free(tmp);
 
