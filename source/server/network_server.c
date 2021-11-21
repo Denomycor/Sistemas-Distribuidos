@@ -27,7 +27,6 @@ stats_sync_data stats_sync;
  */
 void* dispatch_thread(void* args){
     
-    clock_t clock;
 
     if(pthread_detach(pthread_self())!=0){
         printf("Error detaching the thread %li", pthread_self());
@@ -40,12 +39,14 @@ void* dispatch_thread(void* args){
 
     MessageT* msg;
     while (1) {
-        start_timing(&clock);
 
         if((msg = network_receive(sockfd)) == NULL){
             printf("Error processing response at thread: %li - couldn't receive message", pthread_self());
             return (void*)-1;
         }
+
+        struct timeval clock;
+        start_timing(&clock);
 
         int op_code = msg->opcode;
 
@@ -61,7 +62,7 @@ void* dispatch_thread(void* args){
 
         if(!(op_code > 60 || op_code < 10)){
 
-            stop_timing(&clock);
+            double ms = stop_timing(&clock);
             
             if(pthread_mutex_lock(&stats_sync.stats_write_mutex)!=0){
                 printf("Error processing response at thread: %li couldn't lock read_mutex", pthread_self());
@@ -73,7 +74,7 @@ void* dispatch_thread(void* args){
                 return (void*)-1;
             }
 
-            update_stats(&stats, op_code, clock);
+            update_stats(&stats, op_code, ms);
             
             write_exclusive_unlock(&stats_sync.stats_exc_mutex);
             pthread_mutex_unlock(&stats_sync.stats_write_mutex);
