@@ -37,6 +37,7 @@ int main(int argc, char** argv) {
     }
 
     if(network_server_close(listening_socket)==-1){
+        table_skel_destroy();
         perror("Error - Couldn't close listening socket");
         exit(-1);
     }
