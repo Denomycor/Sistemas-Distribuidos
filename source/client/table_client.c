@@ -29,11 +29,12 @@ int main(int argc, char** argv){
         int c;
     }parser;
 
+    if((table = rtable_connect(argv[1])) == NULL){
+        perror("Error - couldn't open socket");
+        return -1;
+    }
+
     do {
-        if((table = rtable_connect(argv[1])) == NULL){
-            perror("Error - couldn't open socket");
-            return -1;
-        }
 
         parser.c = 0;
         memset(parser.ops, 0, 3*sizeof(char*));
@@ -116,9 +117,10 @@ int main(int argc, char** argv){
             printf("%s", "Please insert a valid command\n");
         }
 
-        rtable_disconnect(table);
 
     } while( strcmp(parser.ops[0], "quit") != 0 );
+    
+    rtable_disconnect(table);
 
     return 0;
 }
