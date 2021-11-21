@@ -1,13 +1,13 @@
 #include "server/access_man.h"
 
 
-int rw_exc_init(rw_exc_t* m){
+int rw_mutex_init(rw_mutex_t* m){
     m->rc=0;
     m->wc=0;
     return pthread_mutex_init(&m->mutex, NULL);
 }
 
-int read_exclusive_lock(rw_exc_t* m){
+int read_exclusive_lock(rw_mutex_t* m){
     int res;
     do{
         res = read_exc(m);
@@ -15,7 +15,7 @@ int read_exclusive_lock(rw_exc_t* m){
     return res;
 }
 
-int write_exclusive_lock(rw_exc_t* m){
+int write_exclusive_lock(rw_mutex_t* m){
     int res;
     do{
         res = write_exc(m);
@@ -23,7 +23,7 @@ int write_exclusive_lock(rw_exc_t* m){
     return res;
 }
 
-int read_exc(rw_exc_t* m){
+int read_exc(rw_mutex_t* m){
     int err;
     if((err = pthread_mutex_lock(&m->mutex))!=0)
         return err;
@@ -41,12 +41,12 @@ int read_exc(rw_exc_t* m){
     }
 }
 
-int write_exc(rw_exc_t* m){
+int write_exc(rw_mutex_t* m){
     int err;
     if((err = pthread_mutex_lock(&m->mutex))!=0)
         return err;
 
-    if(m->rc>0){
+    if(m->rc>0 || m->wc>0){
         if((err = pthread_mutex_unlock(&m->mutex))!=0)
             return err;
 
@@ -59,7 +59,7 @@ int write_exc(rw_exc_t* m){
     }
 }
 
-int read_exclusive_unlock(rw_exc_t* m){
+int read_exclusive_unlock(rw_mutex_t* m){
     int err;
     if((err = pthread_mutex_lock(&m->mutex))!=0)
         return err;
@@ -69,7 +69,7 @@ int read_exclusive_unlock(rw_exc_t* m){
     return 0;
 }
 
-int write_exclusive_unlock(rw_exc_t* m){
+int write_exclusive_unlock(rw_mutex_t* m){
     int err;
     if((err = pthread_mutex_lock(&m->mutex))!=0)
         return err;
@@ -79,6 +79,6 @@ int write_exclusive_unlock(rw_exc_t* m){
     return 0;
 }
 
-int rw_exc_destroy(rw_exc_t* m){
+int rw_mutex_destroy(rw_mutex_t* m){
     return pthread_mutex_destroy(&m->mutex);
 }

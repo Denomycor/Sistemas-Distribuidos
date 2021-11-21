@@ -20,14 +20,13 @@
 
 extern struct table_t* g_table;
 extern struct statistics stats;
-stats_sync_data stats_sync;
+rw_mutex_t stats_exc_mutex;
 
 /* Receives the socket descriptor and handles a response from the server
  * to the client
  */
 void* dispatch_thread(void* args){
     
-
     if(pthread_detach(pthread_self())!=0){
         printf("Error detaching the thread %li", pthread_self());
         return (void*)-1;
@@ -64,20 +63,14 @@ void* dispatch_thread(void* args){
 
             double ms = stop_timing(&clock);
             
-            if(pthread_mutex_lock(&stats_sync.stats_write_mutex)!=0){
-                printf("Error processing response at thread: %li couldn't lock read_mutex", pthread_self());
-                return (void*)-1;
-            }
-            if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
+            if(write_exclusive_lock(&stats_exc_mutex)!=0){
                 printf("Error processing response at thread: %li couldn't lock write_exclusive", pthread_self());
-                pthread_mutex_unlock(&stats_sync.stats_write_mutex);
                 return (void*)-1;
             }
 
             update_stats(&stats, op_code, ms);
             
-            write_exclusive_unlock(&stats_sync.stats_exc_mutex);
-            pthread_mutex_unlock(&stats_sync.stats_write_mutex);
+            write_exclusive_unlock(&stats_exc_mutex);
         }
     }
 
@@ -115,10 +108,7 @@ int network_server_init(short port){
     };
 
 
-    if(rw_exc_init(&stats_sync.stats_exc_mutex)!=0){
-        return -1;
-    }
-    if(pthread_mutex_init(&stats_sync.stats_write_mutex, NULL)!=0){
+    if(rw_mutex_init(&stats_exc_mutex)!=0){
         return -1;
     }
 
@@ -207,10 +197,7 @@ int network_send(int client_socket, MessageT *msg){
  */
 int network_server_close(int listening_socket){
 
-    if(rw_exc_destroy(&stats_sync.stats_exc_mutex)!=0){
-        return -1;
-    }
-    if(pthread_mutex_destroy(&stats_sync.stats_write_mutex)!=0){
+    if(rw_mutex_destroy(&stats_exc_mutex)!=0){
         return -1;
     }
 
