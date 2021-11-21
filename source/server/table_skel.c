@@ -7,7 +7,7 @@
 #include "statistics/stats.h"
 #include "server/table_skel.h"
 #include "message/serialization.h"
-#include "server/access-man.h"
+#include "server/access_man.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
