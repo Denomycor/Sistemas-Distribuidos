@@ -38,6 +38,9 @@ void table_skel_destroy(){
 */
 int invoke(MessageT *msg){
 
+    struct timeval clock;
+    start_timing(&clock);
+    int op_code = msg->opcode;
 
     if(msg->opcode == MESSAGE_T__OPCODE__OP_SIZE){
         msg->opcode++;
@@ -45,6 +48,7 @@ int invoke(MessageT *msg){
         msg->buffer.len = 4;
         msg->buffer.data = malloc(sizeof(int));
         *msg->buffer.data = table_size(g_table);
+
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_DEL){
         if(table_del(g_table, msg->buffer.data)==-1){
@@ -56,6 +60,7 @@ int invoke(MessageT *msg){
         free(msg->buffer.data);
         msg->buffer.len = 0;
         msg->buffer.data = NULL;
+
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_GET){
         struct data_t* temp;
@@ -74,6 +79,7 @@ int invoke(MessageT *msg){
         }
         data_destroy(temp);
 
+
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_PUT){
         struct entry_t* temp = buffer_to_entry(msg->buffer.data, msg->buffer.len);
         if(table_put(g_table, temp->key, temp->value)==-1){
@@ -86,6 +92,7 @@ int invoke(MessageT *msg){
         free(msg->buffer.data);
         msg->buffer.data = NULL;
         msg->buffer.len = 0;
+
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_GETKEYS){
         msg->opcode++;
@@ -115,6 +122,7 @@ int invoke(MessageT *msg){
 
         table_free_keys(k);
 
+
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_PRINT){
         msg->opcode++;
         msg->c_type = MESSAGE_T__C_TYPE__CT_TABLE;
@@ -129,24 +137,42 @@ int invoke(MessageT *msg){
             msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
             msg->buffer.len = 0;
         }else{
-            msg->buffer.len = sizeof(struct statistics);
+
             if(write_exclusive_lock(&stats_exc_mutex)!=0){
                 printf("Error processing response at thread: %li couldn't lock write_exclusive at invoke", pthread_self());
                 msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
                 msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
                 msg->buffer.len = 0;
-                return 0;
+                free(msg->buffer.data);
+            }else{
+                memcpy(msg->buffer.data, &stats, msg->buffer.len);
+                write_exclusive_unlock(&stats_exc_mutex);
+                msg->buffer.len = sizeof(struct statistics);
+                msg->opcode++;
+                msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
             }
-            memcpy(msg->buffer.data, &stats, msg->buffer.len);
-            write_exclusive_unlock(&stats_exc_mutex);
-
-            msg->opcode++;
-            msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+            
         }
 
     }else{
         return -1;
+        //OP_CODE not defined
     }
+
+    if(!(op_code > 60 || op_code < 10)){
+
+        double ms = stop_timing(&clock);
+        
+        if(write_exclusive_lock(&stats_exc_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't lock write_exclusive", pthread_self());
+            return -1;
+        }
+
+        update_stats(&stats, op_code, ms);
+        
+        write_exclusive_unlock(&stats_exc_mutex);
+    }
+
     return 0;
 }
 
