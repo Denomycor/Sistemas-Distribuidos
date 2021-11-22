@@ -14,7 +14,7 @@
 
 extern struct table_t* g_table;
 extern struct statistics stats;
-extern stats_sync_data stats_sync;
+extern rw_mutex_t stats_mutex;
 
 /* Inicia o skeleton da tabela.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -23,12 +23,17 @@ extern stats_sync_data stats_sync;
  * Retorna 0 (OK) ou -1 (erro, por exemplo OUT OF MEMORY)
  */
 int table_skel_init(int n_lists){
+    if(rw_mutex_init(&stats_mutex)!=0){
+        return -1;
+    }
+
     return (g_table = table_create(n_lists)) == NULL ? -1:0;  
 }
 
 /* Liberta toda a memória e recursos alocados pela função table_skel_init.
  */
 void table_skel_destroy(){
+    rw_mutex_destroy(&stats_mutex);
     table_destroy(g_table);
 }
 
@@ -130,7 +135,7 @@ int invoke(MessageT *msg){
             msg->buffer.len = 0;
         }else{
             msg->buffer.len = sizeof(struct statistics);
-            if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
+            if(write_exclusive_lock(&stats_mutex)!=0){
                 printf("Error processing response at thread: %li couldn't lock write_exclusive at invoke", pthread_self());
                 msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
                 msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
@@ -138,10 +143,16 @@ int invoke(MessageT *msg){
                 return 0;
             }
             memcpy(msg->buffer.data, &stats, msg->buffer.len);
-            write_exclusive_unlock(&stats_sync.stats_exc_mutex);
+            if(write_exclusive_unlock(&stats_mutex)!=0){
+                printf("Error processing response at thread: %li couldn't unlock write_exclusive at invoke", pthread_self());
+                msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
+                msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+                msg->buffer.len = 0;
+            }else{
 
-            msg->opcode++;
-            msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+                msg->opcode++;
+                msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+            }
         }
 
     }else{
