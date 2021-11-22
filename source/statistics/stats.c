@@ -1,23 +1,23 @@
 #include "statistics/stats.h"
 
 //Start timer on t
-void start_timing(clock_t* t){
-    *t = clock();
+void start_timing(struct timeval* t){
+    gettimeofday(t, (void*)0);
 }
 
-//Finish timer and leve on t the span between start_timing and stop_timing
-void stop_timing(clock_t* t){
-    *t = clock() - *t;
+//Finish timer and return time in ms
+double stop_timing(const struct timeval* t){
+    struct timeval t2;
+    gettimeofday(&t2, (void*)0);
+    
+    double ms = (t2.tv_sec - t->tv_sec) * 1000.0;
+    ms += (t2.tv_usec - t->tv_usec) / 1000.0;
+    return ms;
 }
 
 //Update the stats
-void update_stats(stats_t* stats, int op_code, clock_t time){
+void update_stats(struct statistics* stats, int op_code, double ms){
     stats->total++;
-    stats->avg += (time - stats->avg)/stats->total;
+    stats->avg += (ms - stats->avg)/stats->total;
     stats->counter[(op_code/10)-1]++;
-}
-
-//Return the avg time in seconds
-double get_avg_time(const stats_t* stats){
-    return ((double)stats->avg) / CLOCKS_PER_SEC;
 }

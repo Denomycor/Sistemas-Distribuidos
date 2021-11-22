@@ -4,10 +4,12 @@
  * João Anjos 54476
  */
 
+#include "statistics/stats-private.h"
 #include "client/client_stub.h"
 #include "helper/priv-func.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define RESP_SIZE 512
 #define RESP_SIZE_S "512"
@@ -27,17 +29,18 @@ int main(int argc, char** argv){
         int c;
     }parser;
 
+    if((table = rtable_connect(argv[1])) == NULL){
+        perror("Error - couldn't open socket");
+        return -1;
+    }
+
     do {
-        if((table = rtable_connect(argv[1])) == NULL){
-            perror("Error - couldn't open socket");
-            return -1;
-        }
 
         parser.c = 0;
         memset(parser.ops, 0, 3*sizeof(char*));
         memset(parser.com, 0, RESP_SIZE);
         
-        printf("\n-size\n-del<key>\n-get<key>\n-put<key><data>\n-getkeys\n-table_print\n-quit\n>>> ");
+        printf("\n-size\n-del<key>\n-get<key>\n-put<key><data>\n-getkeys\n-table_print\n-stats\n-quit\n>>> ");
         fgets(parser.com,RESP_SIZE, stdin);
         parser.com[strlen(parser.com)-1] = '\0';
         printf("\n\n");
@@ -100,13 +103,23 @@ int main(int argc, char** argv){
         }else if(strcmp(parser.ops[0], "table_print")==0){
             rtable_print(table);
 
+        }else if(strcmp(parser.ops[0], "stats")==0){
+            struct statistics*const stats = rtable_stats(table);
+            if(stats != NULL){
+                print_stats(stats);
+                free(stats);
+            }else{
+                printf("Something went wrong\n");
+            }
+
         }else if(strcmp(parser.ops[0], "quit") != 0){
             printf("%s", "Please insert a valid command\n");
         }
 
-        rtable_disconnect(table);
 
     } while( strcmp(parser.ops[0], "quit") != 0 );
+    
+    rtable_disconnect(table);
 
     return 0;
 }

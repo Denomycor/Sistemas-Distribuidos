@@ -7,11 +7,14 @@
 #include "statistics/stats.h"
 #include "server/table_skel.h"
 #include "message/serialization.h"
+#include "server/access_man.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 extern struct table_t* g_table;
-extern stats_t stats;
+extern struct statistics stats;
+extern stats_sync_data stats_sync;
 
 /* Inicia o skeleton da tabela.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -67,7 +70,7 @@ int invoke(MessageT *msg){
             msg->opcode++;
             msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
             free(msg->buffer.data);
-            msg->buffer.len = data_to_buffer(temp, &msg->buffer.data);
+            msg->buffer.len = data_to_buffer(temp, (char**)&msg->buffer.data);
         }
         data_destroy(temp);
 
@@ -120,14 +123,23 @@ int invoke(MessageT *msg){
 
 
     }else if(msg->opcode == MESSAGE_T__OPCODE__OP_STATS){
-        msg->buffer.data = malloc(sizeof(stats_t));
+        msg->buffer.data = malloc(sizeof(struct statistics));
         if(msg->buffer.data == NULL){
             msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
             msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
             msg->buffer.len = 0;
         }else{
-            msg->buffer.len = sizeof(stats_t);
+            msg->buffer.len = sizeof(struct statistics);
+            if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
+                printf("Error processing response at thread: %li couldn't lock write_exclusive at invoke", pthread_self());
+                msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
+                msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+                msg->buffer.len = 0;
+                return 0;
+            }
             memcpy(msg->buffer.data, &stats, msg->buffer.len);
+            write_exclusive_unlock(&stats_sync.stats_exc_mutex);
+
             msg->opcode++;
             msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
         }

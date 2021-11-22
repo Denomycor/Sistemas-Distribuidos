@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 struct table_t* g_table;
-stats_t stats; //Initialized at 0 because its a global variable
+struct statistics stats; //Initialized at 0 because its a global variable
     
 int main(int argc, char** argv) {
     
@@ -32,14 +32,12 @@ int main(int argc, char** argv) {
 
     listening_socket = network_server_init(port);
 
-    while(1) {
-        if(network_main_loop(listening_socket)==-1){
-            printf("Error - Couldn't prepare server to listen");
-            break;
-        }
+    if(network_main_loop(listening_socket) < 0 ){
+        printf("Error - Couldn't prepare server to listen");
     }
 
     if(network_server_close(listening_socket)==-1){
+        table_skel_destroy();
         perror("Error - Couldn't close listening socket");
         exit(-1);
     }

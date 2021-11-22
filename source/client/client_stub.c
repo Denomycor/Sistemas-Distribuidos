@@ -65,7 +65,7 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
     message_t__init(&msg);
     msg.opcode = MESSAGE_T__OPCODE__OP_PUT;
     msg.c_type = MESSAGE_T__C_TYPE__CT_ENTRY;
-    msg.buffer.len = entry_to_buffer(entry, &msg.buffer.data);
+    msg.buffer.len = entry_to_buffer(entry, (char**)&msg.buffer.data);
 
     MessageT* resp = network_send_receive(rtable, &msg);
 
@@ -97,7 +97,7 @@ struct data_t *rtable_get(struct rtable_t *rtable, char *key){
         return NULL;
     }
 
-    struct data_t*const data = buffer_to_data(resp->buffer.data, resp->buffer.len);
+    struct data_t* const data = buffer_to_data(resp->buffer.data, resp->buffer.len);
 
     message_t__free_unpacked(resp, NULL);
 
@@ -151,6 +151,30 @@ int rtable_size(struct rtable_t *rtable){
     return result;
 }
 
+/* Obtém as estatísticas do servidor */
+struct statistics* rtable_stats(struct rtable_t *rtable){
+    MessageT msg;
+    message_t__init(&msg);  
+    msg.opcode = MESSAGE_T__OPCODE__OP_STATS;
+    msg.c_type = MESSAGE_T__C_TYPE__CT_NONE;
+    msg.buffer.len = 0;
+    msg.buffer.data = NULL;
+
+    MessageT* resp = network_send_receive(rtable, &msg);
+
+    if(resp == NULL){
+        message_t__free_unpacked(resp, NULL);
+        return NULL;
+    }
+
+    struct statistics* const stats = (struct statistics*)resp->buffer.data;
+    resp->buffer.data = NULL;
+    resp->buffer.len = 0;
+
+    message_t__free_unpacked(resp, NULL);
+    return stats;
+}
+
 /* Devolve um array de char* com a cópia de todas as keys da tabela,
  * colocando um último elemento a NULL.
  */
@@ -170,7 +194,7 @@ char **rtable_get_keys(struct rtable_t *rtable){
     }
 
     int nkeys = 0;
-    for(char* i = resp->buffer.data; i < resp->buffer.data+resp->buffer.len; i++){
+    for(char* i = resp->buffer.data; i < (char*)resp->buffer.data+resp->buffer.len; i++){
         if(*i == '\0'){
             nkeys++;
         }
@@ -199,6 +223,7 @@ void rtable_free_keys(char **keys){
     free(keys);
 }
 
+
 /* Função que imprime o conteúdo da tabela remota para o terminal.
  */
 void rtable_print(struct rtable_t *rtable) {
@@ -215,4 +240,6 @@ void rtable_print(struct rtable_t *rtable) {
 
     message_t__free_unpacked(rsp,NULL);
 }
+
+
 

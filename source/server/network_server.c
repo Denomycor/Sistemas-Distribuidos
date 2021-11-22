@@ -7,6 +7,7 @@
 #include "statistics/stats.h"
 #include "server/network_server.h"
 #include "message/message.h"
+#include "server/access_man.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/unistd.h>
@@ -18,15 +19,14 @@
 #include <pthread.h>
 
 extern struct table_t* g_table;
-extern stats_t stats;
+extern struct statistics stats;
+stats_sync_data stats_sync;
 
 /* Receives the socket descriptor and handles a response from the server
  * to the client
  */
 void* dispatch_thread(void* args){
     
-    clock_t clock;
-    start_timing(&clock);
 
     if(pthread_detach(pthread_self())!=0){
         printf("Error detaching the thread %li", pthread_self());
@@ -38,28 +38,48 @@ void* dispatch_thread(void* args){
     free(args);
 
     MessageT* msg;
-    if((msg = network_receive(sockfd)) == NULL){
-        printf("Error processing response at thread: %li - couldn't receive message", pthread_self());
-        return (void*)-1;
-    }
+    while (1) {
 
-    int op_code = msg->opcode;
+        if((msg = network_receive(sockfd)) == NULL){
+            printf("Error processing response at thread: %li - couldn't receive message", pthread_self());
+            return (void*)-1;
+        }
 
-    if (invoke(msg) < 0){
-        printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
-        return (void*)-1;
-    }
+        struct timeval clock;
+        start_timing(&clock);
 
-    if(network_send(sockfd, msg) < 0){
-        printf("Error processing response at thread: %li couldn't send message", pthread_self());
-        return (void*)-1;
-    }
+        int op_code = msg->opcode;
 
-    if(!(op_code > 60 || op_code < 10)){
-        stop_timing(&clock);
-        update_stats(&stats, op_code, clock);
+        if (invoke(msg) < 0){
+            printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
+            return (void*)-1;
+        }
+
+        if(network_send(sockfd, msg) < 0){
+            printf("Error processing response at thread: %li couldn't send message", pthread_self());
+            return (void*)-1;
+        }
+
+        if(!(op_code > 60 || op_code < 10)){
+
+            double ms = stop_timing(&clock);
+            
+            if(pthread_mutex_lock(&stats_sync.stats_write_mutex)!=0){
+                printf("Error processing response at thread: %li couldn't lock read_mutex", pthread_self());
+                return (void*)-1;
+            }
+            if(write_exclusive_lock(&stats_sync.stats_exc_mutex)!=0){
+                printf("Error processing response at thread: %li couldn't lock write_exclusive", pthread_self());
+                pthread_mutex_unlock(&stats_sync.stats_write_mutex);
+                return (void*)-1;
+            }
+
+            update_stats(&stats, op_code, ms);
+            
+            write_exclusive_unlock(&stats_sync.stats_exc_mutex);
+            pthread_mutex_unlock(&stats_sync.stats_write_mutex);
+        }
     }
-    
 
     return (void*)0;
 }
@@ -94,6 +114,14 @@ int network_server_init(short port){
         return -1;
     };
 
+
+    if(rw_exc_init(&stats_sync.stats_exc_mutex)!=0){
+        return -1;
+    }
+    if(pthread_mutex_init(&stats_sync.stats_write_mutex, NULL)!=0){
+        return -1;
+    }
+
     if (listen(sockfd, 0) < 0){
         return -1;
     };
@@ -109,26 +137,26 @@ int network_server_init(short port){
  * - Enviar a resposta ao cliente usando a função network_send.
  */
 int network_main_loop(int listening_socket){
-    int sockfd;
+    while(1) {
+    
+        int sockfd;
+        if ((sockfd = accept(listening_socket,NULL,0)) < 0) {
+            return -1;
+        }
 
-    if ((sockfd = accept(listening_socket,NULL,0)) < 0){ //the struct sockaddr wont be necessary
-        return -1;
+        int* args;
+        if((args = malloc(sizeof(int))) == NULL){
+            printf("Couldn't initialize a new thread to answer a request");
+            continue;
+        }
+        *args = sockfd;
+
+        pthread_t id;
+        if(pthread_create(&id, NULL, dispatch_thread, args) != 0){
+            printf("Couldn't initialize a new thread to answer a request");
+            continue;
+        }
     }
-
-    int* args = malloc(sizeof(int));
-    if(args == NULL){
-        printf("Couldn't initialize a new thread to answer a request");
-        return -2;
-    }
-    *args = sockfd;
-
-    pthread_t id;
-    if(pthread_create(&id, NULL, dispatch_thread, args)!=0){
-        printf("Couldn't initialize a new thread to answer a request");
-        return -2;
-    }
-
-    return 0;
 }
 
 /* Esta função deve:
@@ -171,7 +199,6 @@ int network_send(int client_socket, MessageT *msg){
         return -1;
     }
     free(buf);
-    close(client_socket);
     return 0;
 }
 
@@ -179,5 +206,13 @@ int network_send(int client_socket, MessageT *msg){
  * network_server_init().
  */
 int network_server_close(int listening_socket){
+
+    if(rw_exc_destroy(&stats_sync.stats_exc_mutex)!=0){
+        return -1;
+    }
+    if(pthread_mutex_destroy(&stats_sync.stats_write_mutex)!=0){
+        return -1;
+    }
+
     return close(listening_socket);
 }

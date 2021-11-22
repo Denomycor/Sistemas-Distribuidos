@@ -15,12 +15,21 @@ int read_all(int sockfd, uint8_t** data) {
     int size;
 
     int* tmp = malloc(UNSIGNED_SIZE);
+    if(tmp == NULL){
+        return -1;
+    }
     memset(tmp,0,UNSIGNED_SIZE);
+  
     read(sockfd, tmp, UNSIGNED_SIZE);
     
     size = ntohl(*tmp);
     *data = malloc(size);
+
+    if(data == NULL){
+        return -1;
+    }
     memset(data,0,size);
+
     free(tmp);
 
     while (alreadyRead != size) {
@@ -41,7 +50,7 @@ int write_all(int sockfd, char* data, int size) {
     write(sockfd, &s, sizeof(uint32_t));
 
     while (sent != size) {
-        int sentNow = write(sockfd, data, size); //may be using uninitialized mem
+        int sentNow = write(sockfd, data+sent, size-sent);
         if ( sentNow == -1 ) {
             return -1;
         }
