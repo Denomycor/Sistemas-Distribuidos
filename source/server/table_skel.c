@@ -43,6 +43,10 @@ void table_skel_destroy(){
 */
 int invoke(MessageT *msg){
 
+    struct timeval clock;
+    start_timing(&clock);
+    int op_code = msg->opcode;
+
 
     if(msg->opcode == MESSAGE_T__OPCODE__OP_SIZE){
         msg->opcode++;
@@ -135,29 +139,46 @@ int invoke(MessageT *msg){
             msg->buffer.len = 0;
         }else{
             msg->buffer.len = sizeof(struct statistics);
-            if(write_exclusive_lock(&stats_mutex)!=0){
-                printf("Error processing response at thread: %li couldn't lock write_exclusive at invoke", pthread_self());
-                msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
-                msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
-                msg->buffer.len = 0;
-                return 0;
-            }
-            memcpy(msg->buffer.data, &stats, msg->buffer.len);
-            if(write_exclusive_unlock(&stats_mutex)!=0){
-                printf("Error processing response at thread: %li couldn't unlock write_exclusive at invoke", pthread_self());
+            if(read_exclusive_lock(&stats_mutex)!=0){
+                printf("Error processing response at thread: %li couldn't lock read_exclusive at invoke", pthread_self());
                 msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
                 msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
                 msg->buffer.len = 0;
             }else{
+                memcpy(msg->buffer.data, &stats, msg->buffer.len);
+                if(read_exclusive_unlock(&stats_mutex)!=0){
+                    printf("Error processing response at thread: %li couldn't unlock read_exclusive at invoke", pthread_self());
+                    msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
+                    msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+                    msg->buffer.len = 0;
+                }else{
 
-                msg->opcode++;
-                msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+                    msg->opcode++;
+                    msg->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+                }
             }
         }
 
     }else{
         return -1;
     }
+
+    if(!(op_code > 60 || op_code < 10)){
+        double ms = stop_timing(&clock);
+
+        if(write_exclusive_lock(&stats_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't lock write_exclusive", pthread_self());
+            return -1;
+        }
+
+        update_stats(&stats, op_code, ms);
+        
+        if(write_exclusive_unlock(&stats_mutex)!=0){
+            printf("Error processing response at thread: %li couldn't unlock write_exclusive", pthread_self());
+            return -1;
+        }
+    }
+
     return 0;
 }
 

@@ -45,11 +45,6 @@ void* dispatch_thread(void* args){
             return (void*)-1;
         }
 
-        struct timeval clock;
-        start_timing(&clock);
-
-        int op_code = msg->opcode;
-
         if (invoke(msg) < 0){
             printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
             return (void*)-1;
@@ -60,22 +55,6 @@ void* dispatch_thread(void* args){
             return (void*)-1;
         }
 
-        if(!(op_code > 60 || op_code < 10)){
-
-            double ms = stop_timing(&clock);
-
-            if(write_exclusive_lock(&stats_mutex)!=0){
-                printf("Error processing response at thread: %li couldn't lock write_exclusive", pthread_self());
-                return (void*)-1;
-            }
-
-            update_stats(&stats, op_code, ms);
-            
-            if(write_exclusive_unlock(&stats_mutex)!=0){
-                printf("Error processing response at thread: %li couldn't unlock write_exclusive", pthread_self());
-                return (void*)-1;
-            }
-        }
     }
 
     return (void*)0;
