@@ -15,12 +15,12 @@ int read_all(int sockfd, uint8_t** data) {
     int size;
 
     int* tmp = malloc(UNSIGNED_SIZE);
-    //memset(tmp,0,UNSIGNED_SIZE);
+    memset(tmp,0,UNSIGNED_SIZE);
     read(sockfd, tmp, UNSIGNED_SIZE);
     
     size = ntohl(*tmp);
     *data = malloc(size);
-    //memset(data,0,size);
+    memset(data,0,size);
     free(tmp);
 
     while (alreadyRead != size) {
