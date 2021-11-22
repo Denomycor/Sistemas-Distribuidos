@@ -5,21 +5,23 @@
  */
 
 #include "server/network_server.h"
-#include "message/message.h"
 #include "server/access_man.h"
+#include "statistics/stats.h"
+#include "message/message.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/unistd.h>
 #include <sys/signal.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
+
 
 extern struct table_t* g_table;
 extern struct statistics stats;
-rw_mutex_t stats_exc_mutex;
+extern rw_mutex_t stats_exc_mutex;
 
 /* Receives the socket descriptor and handles a response from the server
  * to the client
@@ -47,6 +49,7 @@ void* dispatch_thread(void* args){
             printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
             return (void*)-1;
         }
+
 
         if(network_send(sockfd, msg) < 0){
             printf("Error processing response at thread: %li couldn't send message", pthread_self());
@@ -87,11 +90,6 @@ int network_server_init(short port){
         close(sockfd);
         return -1;
     };
-
-
-    if(rw_mutex_init(&stats_exc_mutex)!=0){
-        return -1;
-    }
 
     if (listen(sockfd, 0) < 0){
         return -1;
@@ -177,10 +175,5 @@ int network_send(int client_socket, MessageT *msg){
  * network_server_init().
  */
 int network_server_close(int listening_socket){
-
-    if(rw_mutex_destroy(&stats_exc_mutex)!=0){
-        return -1;
-    }
-
     return close(listening_socket);
 }

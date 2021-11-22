@@ -2,83 +2,72 @@
 
 
 int rw_mutex_init(rw_mutex_t* m){
-    m->rc=0;
-    m->wc=0;
-    return pthread_mutex_init(&m->mutex, NULL);
+    int res;
+    res = pthread_mutex_init(&m->control_mutex, NULL);
+    if(res != 0)
+        return res;
+    res = pthread_cond_init(&m->cond, NULL);
+    if(res != 0)
+        return res;
+    return 0;
 }
 
 int read_exclusive_lock(rw_mutex_t* m){
     int res;
-    do{
-        res = read_exc(m);
-    }while(res==-1);
-    return res;
+    res = pthread_mutex_lock(&m->control_mutex);
+    if(res != 0)
+        return res;
+    while(m->wc>0){
+        pthread_cond_wait(&m->cond, &m->control_mutex);
+    }
+    m->rc++;
+    pthread_mutex_unlock(&m->control_mutex);
+    return 0;
 }
 
 int write_exclusive_lock(rw_mutex_t* m){
     int res;
-    do{
-        res = write_exc(m);
-    }while(res==-1);
-    return res;
-}
-
-int read_exc(rw_mutex_t* m){
-    int err;
-    if((err = pthread_mutex_lock(&m->mutex))!=0)
-        return err;
-
-    if(m->wc>0){
-        if((err = pthread_mutex_unlock(&m->mutex))!=0)
-            return err;
-
-        return -1;
-    }else{
-        m->rc++;
-        if((err = pthread_mutex_unlock(&m->mutex))!=0)
-            return err;
-        return 0;
+    res = pthread_mutex_lock(&m->control_mutex);
+    if(res != 0)
+        return res;
+    while(m->wc>0 || m->rc>0){
+        pthread_cond_wait(&m->cond, &m->control_mutex);
     }
+    m->wc++;
+    pthread_mutex_unlock(&m->control_mutex);
+    return 0;
 }
 
-int write_exc(rw_mutex_t* m){
-    int err;
-    if((err = pthread_mutex_lock(&m->mutex))!=0)
-        return err;
-
-    if(m->rc>0 || m->wc>0){
-        if((err = pthread_mutex_unlock(&m->mutex))!=0)
-            return err;
-
-        return -1;
-    }else{
-        m->wc++;
-        if((err = pthread_mutex_unlock(&m->mutex))!=0)
-            return err;
-        return 0;
-    }
-}
 
 int read_exclusive_unlock(rw_mutex_t* m){
-    int err;
-    if((err = pthread_mutex_lock(&m->mutex))!=0)
-        return err;
+    int res;
+    res = pthread_mutex_lock(&m->control_mutex);
+    if(res!=0)
+        return res;
     m->rc--;
-    if((err = pthread_mutex_unlock(&m->mutex))!=0)
-        return err;
+	pthread_cond_broadcast(&m->cond);
+	pthread_mutex_unlock(&m->control_mutex);
     return 0;
 }
 
 int write_exclusive_unlock(rw_mutex_t* m){
-    int err;
-    if((err = pthread_mutex_lock(&m->mutex))!=0)
-        return err;
+    int res;
+    res = pthread_mutex_lock(&m->control_mutex);
+    if(res!=0)
+        return res;
     m->wc--;
-    if((err = pthread_mutex_unlock(&m->mutex))!=0)
-        return err;
+	pthread_cond_broadcast(&m->cond);
+	pthread_mutex_unlock(&m->control_mutex);
     return 0;
 }
 
 int rw_mutex_destroy(rw_mutex_t* m){
-    return pthread_mutex_destroy(&m->mutex);
+    int res;
+    res = pthread_mutex_destroy(&m->control_mutex);
+    if(res != 0)
+        return res;
+    res = pthread_cond_destroy(&m->cond);
+    if(res != 0)
+        return res;
+    return 0;
 }

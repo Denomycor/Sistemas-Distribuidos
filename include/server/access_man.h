@@ -10,7 +10,8 @@
  */
 typedef struct {
     size_t rc, wc;
-    pthread_mutex_t mutex;
+    pthread_mutex_t control_mutex;
+    pthread_cond_t cond;
 } rw_mutex_t;
 
 /* Initialize the passed memory, fowards pthread_mutex_init return value
@@ -21,7 +22,6 @@ int rw_mutex_init(rw_mutex_t* m);
  * fowards pthread_mutex_lock return value
  */
 int read_exclusive_lock(rw_mutex_t* m);
-int read_exc(rw_mutex_t* m);
 
 /* Unlocks a mutex for a function that is responsible for reading values,
  * fowards pthread_mutex_unlock return value
@@ -32,7 +32,6 @@ int read_exclusive_unlock(rw_mutex_t* m);
  * fowards pthread_mutex_lock return value
  */
 int write_exclusive_lock(rw_mutex_t* m);
-int write_exc(rw_mutex_t* m);
 
 /* Unlocks a mutex for a function that is responsible for writing values,
  * fowards pthread_mutex_unlock return value
