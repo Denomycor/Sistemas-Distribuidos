@@ -13,25 +13,25 @@ static zhandle_t* zh;
 
 void connection_watcher(zhandle_t *zh, int type, int state, const char *path, void* context){
     if (type == ZOO_SESSION_EVENT) {
-		if (state == ZOO_CONNECTED_STATE) {
-			is_connected = 1; 
-		} else {
-			is_connected = 0; 
-		}
-	} 
+        if (state == ZOO_CONNECTED_STATE) {
+            is_connected = 1; 
+        } else {
+            is_connected = 0; 
+        }
+    } 
 }
 
 static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath, void *watcher_ctx) {
-	if (state == ZOO_CONNECTED_STATE){
-		if (type == ZOO_CHILD_EVENT){
- 			if (ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, watcher_ctx, NULL)) {
- 				printf("ERROR! - Couldn't set watch at /kvstore");
- 			}
+    if (state == ZOO_CONNECTED_STATE){
+        if (type == ZOO_CHILD_EVENT){
+            if (ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, watcher_ctx, NULL)) {
+                printf("ERROR! - Couldn't set watch at /kvstore");
+            }
 
             enum server_status* this_server_status = watcher_ctx;
 
             //Move backup to primary
-	 	    if(this_server_status == BACKUP && ZNONODE == zoo_exists(zh, "/kvstore/primary", 0, NULL)){
+            if(this_server_status == BACKUP && ZNONODE == zoo_exists(zh, "/kvstore/primary", 0, NULL)){
                 
                 void* buff = malloc(DATAMAXLEN);
 
@@ -59,8 +59,8 @@ static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath
             if(this_server_status == PRIMARY_WITHOUT_BACKUP && ZOK == zoo_exists(zh, "/kvstore/backup", 0, NULL)){
                 this_server_status = PRIMARY_WITH_BACKUP;
             }
-	    }
-    }	
+        }
+    }
 }
 
 int server_zoo_init(const char* zoo_host){
