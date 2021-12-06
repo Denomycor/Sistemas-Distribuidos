@@ -24,9 +24,6 @@ void connection_watcher(zhandle_t *zh, int type, int state, const char *path, vo
 static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath, void *watcher_ctx) {
     if (state == ZOO_CONNECTED_STATE){
         if (type == ZOO_CHILD_EVENT){
-            if (ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, watcher_ctx, NULL)) {
-                printf("ERROR! - Couldn't set watch at /kvstore");
-            }
 
             enum server_status* this_server_status = watcher_ctx;
 
@@ -58,6 +55,10 @@ static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath
             //Primary gained its backup
             if(this_server_status == PRIMARY_WITHOUT_BACKUP && ZOK == zoo_exists(zh, "/kvstore/backup", 0, NULL)){
                 this_server_status = PRIMARY_WITH_BACKUP;
+            }
+
+            if (ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, watcher_ctx, NULL)) {
+                printf("ERROR! - Couldn't set watch at /kvstore");
             }
         }
     }
