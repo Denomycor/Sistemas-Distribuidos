@@ -7,6 +7,7 @@
 #include "statistics/stats-private.h"
 #include "client/client_stub.h"
 #include "helper/priv-func.h"
+#include "client/client_redundancy.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -14,12 +15,39 @@
 #define RESP_SIZE 512
 #define RESP_SIZE_S "512"
 
-int main(int argc, char** argv){
+extern char* server_info_buf;
+struct rtable_t* table;
 
-    struct rtable_t* table;
+int update_rtable_t() {
+    if (!is_new()) {
+        return 1;
+    }
+
+    if((table = rtable_connect(server_info_buf)) == NULL){
+        perror("Error - couldn't open socket");
+        return 0;
+    }
+
+    printf("new -----> %s", server_info_buf);
+    return 1;
+}
+
+int main(int argc, char** argv){
 
     if(argc != 2){
         printf("Error - must be called with <ip>:<port>\n");
+        return -1;
+    }
+    
+    if (init_redundancy_manager() < 0) {
+        printf("Error - Could not locate server\n");
+        return -1;
+    }
+    //wait for the connection
+    while (!is_connected()){}
+    
+    if (start_watcher() < 0) {
+        printf("Error - Could not locate server\n");
         return -1;
     }
 
@@ -29,12 +57,11 @@ int main(int argc, char** argv){
         int c;
     }parser;
 
-    if((table = rtable_connect(argv[1])) == NULL){
-        perror("Error - couldn't open socket");
-        return -1;
-    }
-
     do {
+        if (!update_rtable_t()) {
+            return -1;
+        }
+        
 
         parser.c = 0;
         memset(parser.ops, 0, 3*sizeof(char*));

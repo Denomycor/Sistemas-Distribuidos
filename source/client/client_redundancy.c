@@ -6,13 +6,14 @@
 
 #include "client/client_redundancy.h"
 
-static int is_connected;
+static int connected;
 static zhandle_t* zh;
 static char* watcher_ctx = "Client Primary Server Watcher";
 static char* zhost_port = "127.0.0.1:2181";
 static char* primary_path = "/kvstore/primary";
 static int server_info_len = ZDATALEN;
 static int is_watching = 0;
+static int new = 0;
 char* server_info_buf = NULL;
 
 /**
@@ -21,21 +22,30 @@ char* server_info_buf = NULL;
 void connection_watcher(zhandle_t *zzh, int type, int state, const char *path, void* context) {   
     if (type == ZOO_SESSION_EVENT) {                                                          
         if (state == ZOO_CONNECTED_STATE) {                                               
-            is_connected = 1;                                                         
+            connected = 1;                                                         
         } else {                                                                          
-            is_connected = 0;                                                         
+            connected = 0;                                                         
         }                                                                                 
     }                                                                                         
 }
 
 /* Get the updated data and reset the watch
  */
-static void data_watcher(zhandle_t *wzh, int type, int state, const char *zpath, void *watcher_ctx) {
+void data_watcher(zhandle_t *wzh, int type, int state, const char *zpath, void *watcher_ctx) {
     if (state == ZOO_CONNECTED_STATE) {
         if (type == ZOO_CHANGED_EVENT) { 
             zoo_wget(wzh, primary_path, data_watcher,(void *)watcher_ctx, server_info_buf, &server_info_len, NULL);
+            new = 1;
         } 
     }
+}
+
+/* Returns the state of the connection
+ * Return 1 connected
+ * Return 0 not connected
+ */
+int is_connected() {
+    return connected;
 }
 
 /* Starts the redundancy managers
@@ -43,7 +53,7 @@ static void data_watcher(zhandle_t *wzh, int type, int state, const char *zpath,
  * Return <0 in case of error
  */
 int init_redundancy_manager() {
-    if ( is_connected ) {
+    if ( connected ) {
         return 0;
     }
     zh = zookeeper_init(zhost_port, connection_watcher, 2000, 0, 0, 0);
@@ -58,7 +68,7 @@ int init_redundancy_manager() {
  * Return <0 in case of error
  */
 int start_watcher() {
-    if ( !is_connected ) {
+    if ( !connected ) {
         return -1;
     }
     if ( is_watching ) {
@@ -72,8 +82,20 @@ int start_watcher() {
         free(server_info_buf);
         return -1;
     }
+    new = 1;
     is_watching = 1;
 
+    return 0;
+}
+
+/* Returns 1 if the function has never been called after an update to the watched value 
+ * Return 0 otherwise
+ */
+int is_new() {
+    if (new) {
+        new = 0;
+        return 1;
+    }
     return 0;
 }
 
@@ -82,11 +104,11 @@ int start_watcher() {
  * Return <0 in case of error
  */
 void close_redundancy_manager() {
-    if (!is_connected) {
+    if (!connected) {
         return;
     }
     zookeeper_close(zh);
     free(server_info_buf);
-    is_connected = 0;
+    connected = 0;
     is_watching = 0;
 }
