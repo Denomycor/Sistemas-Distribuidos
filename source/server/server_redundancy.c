@@ -8,7 +8,7 @@
 #include <string.h>
 
 
-static u_int8_t is_connected;
+static u_int8_t is_connected=0;
 static zhandle_t* zh;
 
 void connection_watcher(zhandle_t *zh, int type, int state, const char *path, void* context){
@@ -65,6 +65,8 @@ static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath
 }
 
 int server_zoo_init(const char* zoo_host){
+    if(is_connected) return 0;
+
     zh = zookeeper_init(zoo_host, connection_watcher, 2000, 0, 0, 0);
     if(zh == NULL){
         printf("Error! - Couldn't connect to zookeeper server");
@@ -82,6 +84,8 @@ int server_zoo_init(const char* zoo_host){
 }
 
 enum server_status server_zoo_register(const char* data, size_t datasize){
+    if(!is_connected) return ERROR;
+
     struct String_vector* children_list;
     u_int8_t has_primary=0, has_backup=0; 
     if(ZOK != zoo_get_children(zh, "/kvstore", children_list)){
@@ -121,6 +125,8 @@ enum server_status server_zoo_register(const char* data, size_t datasize){
 }
 
 int server_zoo_setwatch(enum server_status* status){
+    if(!is_connected) return -1;
+
     if(ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, status, NULL)){
         printf("ERROR! - Couldn't set watch at /kvstore");
         return -1;
@@ -129,6 +135,8 @@ int server_zoo_setwatch(enum server_status* status){
 }
 
 int server_zoo_get_primary(char* meta_data, size_t size){
+    if(!is_connected) return -1;
+
     if(ZOK != zoo_get(zh, "/kvstore/primary", 0, meta_data, size, NULL)){
         printf("Error! - Couldn't get data at primary in zookeeper");
         return -1;
@@ -137,6 +145,8 @@ int server_zoo_get_primary(char* meta_data, size_t size){
 }
 
 int server_zoo_get_backup(char* meta_data, size_t size){
+    if(!is_connected) return -1;
+
     if(ZOK != zoo_get(zh, "/kvstore/backup", 0, meta_data, size, NULL)){
         printf("Error! - Couldn't get data at backup in zookeeper");
         return -1;
