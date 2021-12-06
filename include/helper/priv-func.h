@@ -10,6 +10,6 @@
 //appends a string to another
 void strapp(char** str, const char* app);
 
-int parse_address(const char* address_port, char** ip, int* port)
+int parse_address(const char* address_port, char** ip, short* port)
 
 #endif

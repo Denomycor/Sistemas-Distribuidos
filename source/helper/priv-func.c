@@ -13,7 +13,7 @@ void strapp(char** str, const char* app){
     memcpy(*str+strlen(*str), app, (strlen(app)+1)*sizeof(char));
 }
 
-int parse_address(const char* address_port, char** ip, int* port){
+int parse_address(const char* address_port, char** ip, short* port){
     size_t sz=-1;
     for(int i=0; i<strlen(address_port);i++){
         if(address_port[i] == ':'){
