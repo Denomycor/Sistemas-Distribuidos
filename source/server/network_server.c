@@ -5,6 +5,7 @@
  */
 
 #include "statistics/stats.h"
+#include "server/server_redundancy.h"
 #include "server/network_server.h"
 #include "message/message.h"
 #include "server/access_man.h"
@@ -45,10 +46,47 @@ void* dispatch_thread(void* args){
             return (void*)-1;
         }
 
-        if (invoke(msg) < 0){
-            printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
-            return (void*)-1;
+        if((msg->opcode == MESSAGE_T__OPCODE__OP_PUT || msg->opcode == MESSAGE_T__OPCODE__OP_DEL)){
+            char* backup = malloc(DATAMAXLEN);
+            if(0 == server_zoo_get_backup(backup, DATAMAXLEN)){
+                
+                int listening2 = network_server_init(13906);
+                int sockfdS = prepare_socket(backup);
+                if(network_send(sockfdS, msg) < 0){
+                    printf("Error processing response at thread: %li couldn't send message", pthread_self());
+                    return (void*)-1;
+                }
+                int sockfdR;
+                if ((sockfdR = accept(listening2,NULL,0)) < 0) {
+                     return -1;
+                }
+                MessageT* msg2;
+                if((msg2 = network_receive(sockfdR)) == NULL){
+                    printf("Error processing response at thread: %li - couldn't receive message", pthread_self());
+                    return (void*)-1;
+                }
+
+                if(msg2->opcode != MESSAGE_T__OPCODE__OP_ERROR){
+                    if (invoke(msg) < 0){
+                        printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
+                        return (void*)-1;
+                    }
+                }else{
+                    error_msg(msg);
+                }
+        
+            }else{
+                error_msg(msg);
+            }
+
+            free(backup);
+        }else{
+            if (invoke(msg) < 0){
+                printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
+                return (void*)-1;
+            }
         }
+
 
         if(network_send(sockfd, msg) < 0){
             printf("Error processing response at thread: %li couldn't send message", pthread_self());
@@ -175,4 +213,43 @@ int network_send(int client_socket, MessageT *msg){
  */
 int network_server_close(int listening_socket){
     return close(listening_socket);
+}
+
+int prepare_socket(char* address_port){
+    char* ip;
+    short port;
+    int sockfd;
+
+    if(-1 == parse_address(address_port, &ip, &port)){
+        printf("ERROR! - Incorrect address format");
+    }
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if(sockfd == -1 || ip == NULL || port == -1){
+        return -1;
+    }
+
+    struct sockaddr_in socket;
+
+    socket.sin_family = AF_INET;
+    socket.sin_port = htons(port);
+    if(inet_pton(AF_INET, ip, &socket.sin_addr) < 1){
+        close(sockfd);
+        return -1;
+    }
+
+    if (connect(sockfd,(struct sockaddr *)&socket, sizeof(socket)) < 0) {
+        close(sockfd);
+        return -1;
+    }
+
+    return sockfd;
+}
+
+void error_msg(MessageT* msg){
+    msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
+    msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+    if(msg->buffer.data!=NULL) free(msg->buffer.data);
+    msg->buffer.data = NULL;
+    msg->buffer.len = 0;
 }

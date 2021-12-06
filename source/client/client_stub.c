@@ -236,6 +236,3 @@ void rtable_print(struct rtable_t *rtable) {
 
     message_t__free_unpacked(rsp,NULL);
 }
-
-
-

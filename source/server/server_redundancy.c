@@ -40,6 +40,8 @@ static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath
                     printf("Error! - Couldn't create primary node in zookeeper");
                 }
 
+                free(buff);
+
                 if(ZOK != zoo_delete(zh, "/kvstore/backup", -1)){
                     printf("Error! - Couldn't delete backup node in zookeeper");
                 }
@@ -69,13 +71,13 @@ int server_zoo_init(const char* zoo_host){
 
     zh = zookeeper_init(zoo_host, connection_watcher, 2000, 0, 0, 0);
     if(zh == NULL){
-        printf("Error! - Couldn't connect to zookeeper server");
+        perror("Error! - Couldn't start zookeeper");
         return -1;
     }
 
     if(ZNONODE == zoo_exists(zh, "/kvstore", 0, NULL)){
         if(ZOK != zoo_create(zh, "/kvstore", NULL, -1, &ZOO_OPEN_ACL_UNSAFE, 0, NULL, 0)){
-            printf("Error! - Couldn't set tree in zookeeper");
+            perror("Error! - Couldn't start zookeeper");
             return -1;
         }
     }
