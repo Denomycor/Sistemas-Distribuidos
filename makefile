@@ -20,7 +20,7 @@ TABLEOBJ = data.o entry.o list-private.o list.o serialization.o table.o table-pr
 SERVEROBJS = table_skel.o network_server.o priv-func.o sdmessage.pb-c.o table_server.o message.o stats.o stats-private.o access_man.o
 
 #Objs needed to compiler client-lib.o
-CLIENTLIBOBJS = client_stub.o network_client.o priv-func.o data.o entry.o sdmessage.pb-c.o serialization.o message.o stats-private.o
+CLIENTLIBOBJS = client_stub.o network_client.o priv-func.o data.o entry.o sdmessage.pb-c.o serialization.o message.o stats-private.o client_redundancy.o
 
 FLAGS = -pthread
 CC = gcc
@@ -51,7 +51,7 @@ client-lib.o: $(CLIENTLIBOBJS)
 
 #table_client.exe
 table_client: table_client.o client-lib.o
-	$(CC) $(FLAGS) -I/usr/include $(OBJDIR)/$< $(LIBDIR)/client-lib.o -o $(addprefix $(BINDIR)/,$@) -L/usr/lib -lprotobuf-c
+	$(CC) $(FLAGS) -I/usr/include $(OBJDIR)/$< $(LIBDIR)/client-lib.o -o $(addprefix $(BINDIR)/,$@) -L/usr/lib -lprotobuf-c -lzookeeper_mt
 
 #table_server.exe
 table_server: $(TABLEOBJ) $(SERVEROBJS)
