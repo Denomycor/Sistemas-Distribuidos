@@ -127,6 +127,22 @@ int server_zoo_setwatch(enum server_status* status){
     return 0;
 }
 
+int server_zoo_get_primary(char* meta_data, size_t size){
+    if(ZOK != zoo_get(zh, "/kvstore/primary", 0, meta_data, size, NULL)){
+        printf("Error! - Couldn't get data at primary in zookeeper");
+        return -1;
+    }
+    return 0;
+}
+
+int server_zoo_get_backup(char* meta_data, size_t size){
+    if(ZOK != zoo_get(zh, "/kvstore/backup", 0, meta_data, size, NULL)){
+        printf("Error! - Couldn't get data at backup in zookeeper");
+        return -1;
+    }
+    return 0;
+}
+
 void server_zoo_close(){
     if(is_connected==1){
         zookeeper_close(zh);
