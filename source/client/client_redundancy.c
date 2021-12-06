@@ -87,4 +87,6 @@ void close_redundancy_manager() {
     }
     zookeeper_close(zh);
     free(server_info_buf);
+    is_connected = 0;
+    is_watching = 0;
 }
