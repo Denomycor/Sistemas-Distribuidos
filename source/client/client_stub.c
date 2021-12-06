@@ -25,13 +25,9 @@ struct rtable_t *rtable_connect(const char *address_port){
     }
     tcp_socket->ip = NULL;
     tcp_socket->port = -1;
-    for(int i=0; i<strlen(address_port);i++){
-        if(address_port[i] == ':'){
-            tcp_socket->port = atoi(address_port+i+1);
-            tcp_socket->ip = malloc(sizeof(char)*(i+1));
-            memcpy(tcp_socket->ip, address_port, sizeof(char)*(i+1));
-            ((char*)tcp_socket->ip)[i] = '\0';
-        }
+
+    if(-1 == parse_address(address_port, &tcp_socket->ip, &tcp_socket->port)){
+        printf("ERROR! - Incorrect address format");
     }
 
     tcp_socket->sockfd = socket(AF_INET, SOCK_STREAM, 0);
