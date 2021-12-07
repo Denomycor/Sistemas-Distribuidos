@@ -6,9 +6,10 @@
 
 #include "server/server_redundancy.h"
 #include <string.h>
+#include <unistd.h>
 
 
-static u_int8_t is_connected=0;
+static u_int8_t is_connected;
 static zhandle_t* zh;
 
 void connection_watcher(zhandle_t *zh, int type, int state, const char *path, void* context){
@@ -75,22 +76,27 @@ int server_zoo_init(const char* zoo_host){
         return -1;
     }
 
+    sleep(2);
+
     if(ZNONODE == zoo_exists(zh, "/kvstore", 0, NULL)){
         if(ZOK != zoo_create(zh, "/kvstore", NULL, -1, &ZOO_OPEN_ACL_UNSAFE, 0, NULL, 0)){
             perror("Error! - Couldn't start zookeeper");
             return -1;
         }
     }
-
     return 0;
 }
 
 enum server_status server_zoo_register(const char* data, size_t datasize){
-    if(!is_connected) return ERROR;
+    if(!is_connected) 
+        return ERROR;
 
     struct String_vector* children_list;
     u_int8_t has_primary=0, has_backup=0; 
-    if(ZOK != zoo_get_children(zh, "/kvstore", children_list)){
+    
+    enum ZOO_ERRORS x = zoo_get_children(zh, "/kvstore",0 , children_list);
+
+    if(ZOK != x){
         printf("Error! - Couldn't get children in zookeeper");
         return ERROR;
     }
@@ -127,7 +133,8 @@ enum server_status server_zoo_register(const char* data, size_t datasize){
 }
 
 int server_zoo_setwatch(enum server_status* status){
-    if(!is_connected) return -1;
+    if(!is_connected) 
+        return -1;
 
     if(ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, status, NULL)){
         printf("ERROR! - Couldn't set watch at /kvstore");
