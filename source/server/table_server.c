@@ -5,6 +5,7 @@
  */
 
 #include "statistics/stats.h"
+#include "helper/priv-func.h"
 #include "dataStructs/table/table.h"
 #include "server/network_server.h"
 #include "server/table_skel.h"
@@ -30,6 +31,20 @@ int main(int argc, char** argv) {
     if (server_zoo_init(argv[3]) == -1){
         exit(-1);
     }
+
+    char* address = malloc(10);
+    address[0] = '1';
+    address[1] = '2';
+    address[2] = '7';
+    address[3] = '.';
+    address[4] = '0';
+    address[5] = '.';
+    address[6] = '0';
+    address[7] = '.';
+    address[8] = '1';
+    address[9] = '\0';
+
+    strapp(&address, argv[1]);
 
     do{
         g_status = server_zoo_register(NULL, -1); //TODO pass server host
