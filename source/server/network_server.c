@@ -4,6 +4,9 @@
  * João Anjos 54476
  */
 
+#include "client/client_stub-private.h"
+#include "client/client_stub.h"
+#include "client/network_client.h"
 #include "statistics/stats.h"
 #include "server/server_redundancy.h"
 #include "server/network_server.h"
@@ -21,6 +24,7 @@
 
 extern struct table_t* g_table;
 extern struct statistics stats;
+extern enum server_status g_status;
 rw_mutex_t stats_mutex;
 
 /* Receives the socket descriptor and handles a response from the server
@@ -46,26 +50,14 @@ void* dispatch_thread(void* args){
             return (void*)-1;
         }
 
-        if((msg->opcode == MESSAGE_T__OPCODE__OP_PUT || msg->opcode == MESSAGE_T__OPCODE__OP_DEL)){
+        if(msg->opcode == MESSAGE_T__OPCODE__OP_PUT || msg->opcode == MESSAGE_T__OPCODE__OP_DEL){
             char* backup = malloc(DATAMAXLEN);
             if(0 == server_zoo_get_backup(backup, DATAMAXLEN)){
                 
-                int listening2 = network_server_init(13906);
-                int sockfdS = prepare_socket(backup);
-                if(network_send(sockfdS, msg) < 0){
-                    printf("Error processing response at thread: %li couldn't send message", pthread_self());
-                    return (void*)-1;
-                }
-                int sockfdR;
-                if ((sockfdR = accept(listening2,NULL,0)) < 0) {
-                     return -1;
-                }
-                MessageT* msg2;
-                if((msg2 = network_receive(sockfdR)) == NULL){
-                    printf("Error processing response at thread: %li - couldn't receive message", pthread_self());
-                    return (void*)-1;
-                }
-
+                struct rtable_t* connection;
+                connection = rtable_connect(backup);
+                MessageT* msg2 = network_send_receive(connection, msg);
+                
                 if(msg2->opcode != MESSAGE_T__OPCODE__OP_ERROR){
                     if (invoke(msg) < 0){
                         printf("Error processing response at thread: %li couldn't resolve asnwer", pthread_self());
@@ -75,6 +67,7 @@ void* dispatch_thread(void* args){
                     error_msg(msg);
                 }
         
+                rtable_disconnect(connection);
             }else{
                 error_msg(msg);
             }

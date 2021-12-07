@@ -34,8 +34,9 @@ int main(int argc, char** argv) {
         if(g_status == REPEAT){
             sleep(1);
         }
-
     }while(g_status == REPEAT);
+    
+    server_zoo_setwatch(&g_status);
 
     if(g_status != NONE && g_status != ERROR){
 
