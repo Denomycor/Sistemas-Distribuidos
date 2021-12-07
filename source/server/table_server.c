@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 
 struct table_t* g_table;
@@ -32,7 +33,7 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    char* address = malloc(10);
+    char* address = malloc(11*sizeof(char));
     address[0] = '1';
     address[1] = '2';
     address[2] = '7';
@@ -42,12 +43,13 @@ int main(int argc, char** argv) {
     address[6] = '0';
     address[7] = '.';
     address[8] = '1';
-    address[9] = '\0';
+    address[9] = ':';
+    address[10] = '\0';
 
     strapp(&address, argv[1]);
 
     do{
-        g_status = server_zoo_register(NULL, -1); //TODO pass server host
+        g_status = server_zoo_register(address, strlen(address)+1); //TODO pass server host
         if(g_status == REPEAT){
             sleep(1);
         }
