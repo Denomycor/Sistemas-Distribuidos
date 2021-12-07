@@ -4,6 +4,9 @@
  * João Anjos 54476
  */
 
+#ifndef _SERVER_REDUNDANCY_H
+#define _SERVER_REDUNDANCY_H
+
 #include <zookeeper/zookeeper.h>
 
 
@@ -34,3 +37,5 @@ int server_zoo_get_primary(char* meta_data, size_t size);
 int server_zoo_get_backup(char* meta_data, size_t size);
 
 void server_zoo_close();
+
+#endif
