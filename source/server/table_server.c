@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+
 struct table_t* g_table;
 struct statistics stats; //Initialized at 0 because its a global variable
 enum server_status g_status;
