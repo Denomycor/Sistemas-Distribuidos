@@ -28,7 +28,7 @@ static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath
             enum server_status* this_server_status = watcher_ctx;
 
             //Move backup to primary
-            if(this_server_status == BACKUP && ZNONODE == zoo_exists(zh, "/kvstore/primary", 0, NULL)){
+            if(*this_server_status == BACKUP && ZNONODE == zoo_exists(zh, "/kvstore/primary", 0, NULL)){
                 
                 void* buff = malloc(DATAMAXLEN);
 
@@ -46,17 +46,17 @@ static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath
                     printf("Error! - Couldn't delete backup node in zookeeper");
                 }
 
-                this_server_status = PRIMARY_WITHOUT_BACKUP;
+                *this_server_status = PRIMARY_WITHOUT_BACKUP;
             }
 
             //Primary lost its backup
-            if(this_server_status == PRIMARY_WITH_BACKUP && ZNONODE == zoo_exists(zh, "/kvstore/backup", 0, NULL)){
-                this_server_status = PRIMARY_WITHOUT_BACKUP;
+            if(*this_server_status == PRIMARY_WITH_BACKUP && ZNONODE == zoo_exists(zh, "/kvstore/backup", 0, NULL)){
+                *this_server_status = PRIMARY_WITHOUT_BACKUP;
             }
 
             //Primary gained its backup
-            if(this_server_status == PRIMARY_WITHOUT_BACKUP && ZOK == zoo_exists(zh, "/kvstore/backup", 0, NULL)){
-                this_server_status = PRIMARY_WITH_BACKUP;
+            if(*this_server_status == PRIMARY_WITHOUT_BACKUP && ZOK == zoo_exists(zh, "/kvstore/backup", 0, NULL)){
+                *this_server_status = PRIMARY_WITH_BACKUP;
             }
 
             if (ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, watcher_ctx, NULL)) {

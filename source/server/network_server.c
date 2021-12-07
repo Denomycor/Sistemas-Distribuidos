@@ -7,6 +7,7 @@
 #include "client/client_stub-private.h"
 #include "client/client_stub.h"
 #include "client/network_client.h"
+#include "helper/priv-func.h"
 #include "statistics/stats.h"
 #include "server/server_redundancy.h"
 #include "server/network_server.h"

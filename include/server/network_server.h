@@ -43,4 +43,6 @@ int network_send(int client_socket, MessageT *msg);
  */
 int network_server_close(int listening_socket);
 
+void error_msg(MessageT* msg);
+
 #endif

@@ -8,9 +8,10 @@
 #include "dataStructs/table/table.h"
 #include "server/network_server.h"
 #include "server/table_skel.h"
-#include "server_redundancy.h"
+#include "server/server_redundancy.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 struct table_t* g_table;
 struct statistics stats; //Initialized at 0 because its a global variable
