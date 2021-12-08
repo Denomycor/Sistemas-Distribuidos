@@ -32,13 +32,14 @@ static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath
             if(*this_server_status == BACKUP && ZNONODE == zoo_exists(zh, "/kvstore/primary", 0, NULL)){
                 
                 void* buff = malloc(DATAMAXLEN);
+                int buff_len = DATAMAXLEN;
                 memset(buff, 0, DATAMAXLEN);
 
-                if(ZOK != zoo_get(zh, "/kvstore/backup", 0, buff, DATAMAXLEN, NULL)){
+                if(ZOK != zoo_get(zh, "/kvstore/backup", 0, buff, &buff_len, NULL)){
                     printf("Error! - Couldn't get data at backup in zookeeper");
                 }
 
-                if(ZOK != zoo_create(zh, "/kvstore/primary", buff, DATAMAXLEN, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL, NULL, 0)){
+                if(ZOK != zoo_create(zh, "/kvstore/primary", buff, buff_len, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL, NULL, 0)){
                     printf("Error! - Couldn't create primary node in zookeeper");
                 }
 
@@ -149,21 +150,21 @@ int server_zoo_setwatch(enum server_status* status){
 int server_zoo_get_primary(char* meta_data, size_t size){
     if(!is_connected) return -1;
     memset(meta_data, 0, size);
-    if(ZOK != zoo_get(zh, "/kvstore/primary", 0, meta_data, size, NULL)){
+    if(ZOK != zoo_get(zh, "/kvstore/primary", 0, meta_data, &size, NULL)){
         printf("Error! - Couldn't get data at primary in zookeeper");
         return -1;
     }
-    return 0;
+    return size;
 }
 
 int server_zoo_get_backup(char* meta_data, size_t size){
     if(!is_connected) return -1;
     memset(meta_data, 0, size);
-    if(ZOK != zoo_get(zh, "/kvstore/backup", 0, meta_data, size, NULL)){
+    if(ZOK != zoo_get(zh, "/kvstore/backup", 0, meta_data, &size, NULL)){
         printf("Error! - Couldn't get data at backup in zookeeper");
         return -1;
     }
-    return 0;
+    return size;
 }
 
 void server_zoo_close(){

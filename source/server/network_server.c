@@ -53,7 +53,7 @@ void* dispatch_thread(void* args){
 
         if((msg->opcode == MESSAGE_T__OPCODE__OP_PUT || msg->opcode == MESSAGE_T__OPCODE__OP_DEL) && g_status != BACKUP){
             char* backup = malloc(DATAMAXLEN);
-            if(g_status == PRIMARY_WITH_BACKUP && 0 == server_zoo_get_backup(backup, DATAMAXLEN)){
+            if(g_status == PRIMARY_WITH_BACKUP && -1 != server_zoo_get_backup(backup, DATAMAXLEN)){
                 
                 struct rtable_t* connection;
                 connection = rtable_connect(backup);
