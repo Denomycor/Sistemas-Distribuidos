@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    char* address = malloc(11*sizeof(char));
+    char* address = malloc(17*sizeof(char));
     address[0] = '1';
     address[1] = '2';
     address[2] = '7';
@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
         }
     }while(g_status == REPEAT);
     
+
     free(address);
     server_zoo_setwatch(&g_status);
 
