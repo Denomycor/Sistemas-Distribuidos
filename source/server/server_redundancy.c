@@ -92,25 +92,24 @@ enum server_status server_zoo_register(const char* data, size_t datasize){
     if(!is_connected) 
         return ERROR;
 
-    struct String_vector* children_list = malloc(sizeof(struct String_vector));
+    struct String_vector children_list;
     u_int8_t has_primary=0, has_backup=0; 
 
-    enum ZOO_ERRORS log = zoo_get_children(zh, "/kvstore",0 , children_list);
+    enum ZOO_ERRORS log = zoo_get_children(zh, "/kvstore",0 , &children_list);
     
     if(ZOK != log){
         printf("Error! - Couldn't get children in zookeeper");
         return ERROR;
     }
-    for(int i=0; i<children_list->count; i++){
-        if (0==strcmp(children_list->data[i], "backup")){
+    for(int i=0; i<children_list.count; i++){
+        if (0==strcmp(children_list.data[i], "backup")){
             has_backup=1;
         }
-        if (0==strcmp(children_list->data[i], "primary")){
+        if (0==strcmp(children_list.data[i], "primary")){
             has_primary=1;
         }
     }
 
-    free(children_list);
 
     if(!has_primary && !has_backup){
         if(ZOK != zoo_create(zh, "/kvstore/primary", data, datasize, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL, NULL, 0)){
