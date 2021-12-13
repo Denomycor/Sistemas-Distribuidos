@@ -25,13 +25,9 @@ struct rtable_t *rtable_connect(const char *address_port){
     }
     tcp_socket->ip = NULL;
     tcp_socket->port = -1;
-    for(int i=0; i<strlen(address_port);i++){
-        if(address_port[i] == ':'){
-            tcp_socket->port = atoi(address_port+i+1);
-            tcp_socket->ip = malloc(sizeof(char)*(i+1));
-            memcpy(tcp_socket->ip, address_port, sizeof(char)*(i+1));
-            ((char*)tcp_socket->ip)[i] = '\0';
-        }
+
+    if(-1 == parse_address(address_port, &tcp_socket->ip, &tcp_socket->port)){
+        printf("ERROR! - Incorrect address format");
     }
 
     tcp_socket->sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -68,6 +64,11 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
     msg.buffer.len = entry_to_buffer(entry, (char**)&msg.buffer.data);
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
+
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         message_t__free_unpacked(resp, NULL);
@@ -91,6 +92,10 @@ struct data_t *rtable_get(struct rtable_t *rtable, char *key){
     msg.buffer.data = key;
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         message_t__free_unpacked(resp, NULL);
@@ -118,6 +123,10 @@ int rtable_del(struct rtable_t *rtable, char *key){
     msg.buffer.data = key;
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         message_t__free_unpacked(resp, NULL);
@@ -139,6 +148,10 @@ int rtable_size(struct rtable_t *rtable){
     msg.buffer.data = NULL;
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     if(resp==NULL){
         message_t__free_unpacked(resp, NULL);
@@ -161,6 +174,10 @@ struct statistics* rtable_stats(struct rtable_t *rtable){
     msg.buffer.data = NULL;
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     if(resp == NULL){
         message_t__free_unpacked(resp, NULL);
@@ -186,8 +203,13 @@ char **rtable_get_keys(struct rtable_t *rtable){
     msg.buffer.len = 0;
     msg.buffer.data = NULL;
 
-    MessageT* resp = network_send_receive(rtable, &msg);
 
+    MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
+    
     if(resp == NULL){
         message_t__free_unpacked(resp, NULL);
         return NULL;
@@ -235,11 +257,12 @@ void rtable_print(struct rtable_t *rtable) {
     msg.buffer.data = NULL;
     
     MessageT* rsp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     printf("%s", rsp->buffer.data);
 
     message_t__free_unpacked(rsp,NULL);
 }
-
-
-

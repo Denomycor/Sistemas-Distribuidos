@@ -10,4 +10,8 @@
 //appends a string to another
 void strapp(char** str, const char* app);
 
+int parse_address(const char* address_port, char** ip, short* port);
+
+void myIp(char** buffer);
+
 #endif

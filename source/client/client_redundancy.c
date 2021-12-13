@@ -11,7 +11,6 @@ static zhandle_t* zh;
 static char* watcher_ctx = "Client Primary Server Watcher";
 static char* zhost_port = "127.0.0.1:2181";
 static char* primary_path = "/kvstore/primary";
-static int server_info_len = ZDATALEN;
 static int is_watching = 0;
 static int new = 0;
 char* server_info_buf = NULL;
@@ -33,11 +32,21 @@ void connection_watcher(zhandle_t *zzh, int type, int state, const char *path, v
  */
 void data_watcher(zhandle_t *wzh, int type, int state, const char *zpath, void *watcher_ctx) {
     if (state == ZOO_CONNECTED_STATE) {
-        if (type == ZOO_CHANGED_EVENT) { 
-            zoo_wget(wzh, primary_path, data_watcher,(void *)watcher_ctx, server_info_buf, &server_info_len, NULL);
+        if (type == ZOO_CHILD_EVENT) {
+
+            if(ZOK == zoo_exists(zh, "/kvstore/primary", 0, NULL)){
+                int server_info_len = ZDATALEN;
+                if(ZOK != zoo_get(zh, primary_path, 0, server_info_buf,&server_info_len, NULL)){
+                    printf("ERROR! - Couldn't get server address");
+                }
+            }
             new = 1;
         } 
     }
+
+    if (ZOK != zoo_wget_children(zh, "/kvstore", &data_watcher, watcher_ctx, NULL)) {
+        printf("ERROR! - Couldn't set watch at /kvstore");
+    }       
 }
 
 /* Returns the state of the connection
@@ -78,10 +87,17 @@ int start_watcher() {
     if (server_info_buf == NULL) {
         return -1;
     }
-    if (ZOK != zoo_wget(zh, primary_path, data_watcher, watcher_ctx, server_info_buf, &server_info_len, NULL)) {
+    int server_info_len = ZDATALEN;
+    if (ZOK != zoo_get(zh, primary_path, 0, server_info_buf,&server_info_len, NULL)) {
         free(server_info_buf);
         return -1;
     }
+
+    if (ZOK != zoo_wget_children(zh, "/kvstore", &data_watcher, watcher_ctx, NULL)) {
+        printf("ERROR! - Couldn't set watch at /kvstore");
+        return -1;
+    }
+
     new = 1;
     is_watching = 1;
 

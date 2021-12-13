@@ -28,7 +28,6 @@ int update_rtable_t() {
         return 0;
     }
 
-    printf("new -----> %s", server_info_buf);
     return 1;
 }
 
@@ -58,9 +57,6 @@ int main(int argc, char** argv){
     }parser;
 
     do {
-        if (!update_rtable_t()) {
-            return -1;
-        }
         
 
         parser.c = 0;
@@ -85,6 +81,10 @@ int main(int argc, char** argv){
             reader++;
         }
         parser.ops[parser.c++] = last;
+
+        if (!update_rtable_t()) {
+            return -1;
+        }
 
         if(strcmp(parser.ops[0],"size")==0){
             printf("The size of the table is: %i\n", rtable_size(table));
