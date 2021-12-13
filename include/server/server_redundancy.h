@@ -32,9 +32,9 @@ enum server_status server_zoo_register(const char* data, size_t datasize);
 
 int server_zoo_setwatch(enum server_status* status);
 
-int server_zoo_get_primary(char* meta_data, size_t size);
+int server_zoo_get_primary(char* meta_data, int size);
 
-int server_zoo_get_backup(char* meta_data, size_t size);
+int server_zoo_get_backup(char* meta_data, int size);
 
 void server_zoo_close();
 

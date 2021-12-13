@@ -147,7 +147,7 @@ int server_zoo_setwatch(enum server_status* status){
     return 0;
 }
 
-int server_zoo_get_primary(char* meta_data, size_t size){
+int server_zoo_get_primary(char* meta_data, int size){
     if(!is_connected) return -1;
     memset(meta_data, 0, size);
     if(ZOK != zoo_get(zh, "/kvstore/primary", 0, meta_data, &size, NULL)){
@@ -157,7 +157,7 @@ int server_zoo_get_primary(char* meta_data, size_t size){
     return size;
 }
 
-int server_zoo_get_backup(char* meta_data, size_t size){
+int server_zoo_get_backup(char* meta_data, int size){
     if(!is_connected) return -1;
     memset(meta_data, 0, size);
     if(ZOK != zoo_get(zh, "/kvstore/backup", 0, meta_data, &size, NULL)){

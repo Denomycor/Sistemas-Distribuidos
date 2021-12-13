@@ -22,7 +22,7 @@ SERVEROBJS = table_skel.o network_server.o priv-func.o sdmessage.pb-c.o table_se
 #Objs needed to compiler client-lib.o
 CLIENTLIBOBJS = client_stub.o network_client.o priv-func.o data.o entry.o sdmessage.pb-c.o serialization.o message.o stats-private.o client_redundancy.o
 
-FLAGS = -pthread
+FLAGS = -pthread -D THREADED
 CC = gcc
 
 
