@@ -64,6 +64,11 @@ int rtable_put(struct rtable_t *rtable, struct entry_t *entry){
     msg.buffer.len = entry_to_buffer(entry, (char**)&msg.buffer.data);
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
+
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         message_t__free_unpacked(resp, NULL);
@@ -87,6 +92,10 @@ struct data_t *rtable_get(struct rtable_t *rtable, char *key){
     msg.buffer.data = key;
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         message_t__free_unpacked(resp, NULL);
@@ -114,6 +123,10 @@ int rtable_del(struct rtable_t *rtable, char *key){
     msg.buffer.data = key;
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     if(resp==NULL || resp->opcode == MESSAGE_T__OPCODE__OP_ERROR){
         message_t__free_unpacked(resp, NULL);
@@ -135,6 +148,10 @@ int rtable_size(struct rtable_t *rtable){
     msg.buffer.data = NULL;
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     if(resp==NULL){
         message_t__free_unpacked(resp, NULL);
@@ -157,6 +174,10 @@ struct statistics* rtable_stats(struct rtable_t *rtable){
     msg.buffer.data = NULL;
 
     MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     if(resp == NULL){
         message_t__free_unpacked(resp, NULL);
@@ -182,8 +203,13 @@ char **rtable_get_keys(struct rtable_t *rtable){
     msg.buffer.len = 0;
     msg.buffer.data = NULL;
 
-    MessageT* resp = network_send_receive(rtable, &msg);
 
+    MessageT* resp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
+    
     if(resp == NULL){
         message_t__free_unpacked(resp, NULL);
         return NULL;
@@ -231,6 +257,10 @@ void rtable_print(struct rtable_t *rtable) {
     msg.buffer.data = NULL;
     
     MessageT* rsp = network_send_receive(rtable, &msg);
+        
+    if(msg.buffer.data!=NULL){
+        free(msg.buffer.data);
+    }
 
     printf("%s", rsp->buffer.data);
 
