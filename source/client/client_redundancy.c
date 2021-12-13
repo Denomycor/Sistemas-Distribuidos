@@ -9,7 +9,6 @@
 static int connected;
 static zhandle_t* zh;
 static char* watcher_ctx = "Client Primary Server Watcher";
-static char* zhost_port = "127.0.0.1:2181";
 static char* primary_path = "/kvstore/primary";
 static int is_watching = 0;
 static int new = 0;
@@ -61,7 +60,7 @@ int is_connected() {
  * Return 0 ok
  * Return <0 in case of error
  */
-int init_redundancy_manager() {
+int init_redundancy_manager(char* zhost_port) {
     if ( connected ) {
         return 0;
     }

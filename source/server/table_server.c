@@ -33,23 +33,14 @@ int main(int argc, char** argv) {
         exit(-1);
     }
 
-    char* address = malloc(17*sizeof(char));
-    address[0] = '1';
-    address[1] = '2';
-    address[2] = '7';
-    address[3] = '.';
-    address[4] = '0';
-    address[5] = '.';
-    address[6] = '0';
-    address[7] = '.';
-    address[8] = '1';
-    address[9] = ':';
-    address[10] = '\0';
+    char* address;
+    myIp(&address);
 
+    strapp(&address, ":");
     strapp(&address, argv[1]);
 
     do{
-        g_status = server_zoo_register(address, strlen(address)+1); //TODO pass server host
+        g_status = server_zoo_register(address, strlen(address)+1);
         if(g_status == REPEAT){
             sleep(1);
         }

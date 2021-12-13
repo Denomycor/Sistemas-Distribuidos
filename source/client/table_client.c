@@ -38,7 +38,7 @@ int main(int argc, char** argv){
         return -1;
     }
     
-    if (init_redundancy_manager() < 0) {
+    if (init_redundancy_manager(argv[1]) < 0) {
         printf("Error - Could not locate server\n");
         return -1;
     }
