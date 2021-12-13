@@ -62,10 +62,10 @@ static void child_watcher(zhandle_t *wzh, int type, int state, const char *zpath
                 *this_server_status = PRIMARY_WITH_BACKUP;
             }
 
-            if (ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, watcher_ctx, NULL)) {
-                printf("ERROR! - Couldn't set watch at /kvstore");
-            }
         }
+    }
+    if (ZOK != zoo_wget_children(zh, "/kvstore", &child_watcher, watcher_ctx, NULL)) {
+        printf("ERROR! - Couldn't set watch at /kvstore");
     }
 }
 

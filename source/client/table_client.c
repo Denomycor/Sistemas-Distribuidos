@@ -28,7 +28,6 @@ int update_rtable_t() {
         return 0;
     }
 
-    printf("new -----> %s", server_info_buf);
     return 1;
 }
 
