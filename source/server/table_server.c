@@ -36,18 +36,21 @@ int main(int argc, char** argv) {
     char* address;
     myIp(&address);
 
-    strapp(&address, ":");
-    strapp(&address, argv[1]);
+    char* heap = malloc((strlen(address)+1)*sizeof(char));
+    memcpy(heap, address, (strlen(address)+1)*sizeof(char));
+
+    strapp(&heap, ":");
+    strapp(&heap, argv[1]);
 
     do{
-        g_status = server_zoo_register(address, strlen(address)+1);
+        g_status = server_zoo_register(heap, strlen(heap)+1);
         if(g_status == REPEAT){
             sleep(1);
         }
     }while(g_status == REPEAT);
     
 
-    free(address);
+    free(heap);
     server_zoo_setwatch(&g_status);
 
     if(g_status != NONE && g_status != ERROR){
